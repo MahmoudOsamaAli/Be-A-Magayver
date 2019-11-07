@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:background="@android:color/white"
+    tools:context=".view.activities.WelcomeActivity">
+
+    <ImageView
+        android:id="@+id/image_welcome"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:visibility="visible"
+        android:src="@drawable/welcome_img"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+    <LinearLayout
+        android:id="@+id/linear1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="8dp"
+        android:visibility="gone"
+        android:layout_margin="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        >
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:elevation="8dp"
+            android:src="@drawable/magayver"
+            android:layout_marginTop="50dp"/>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Register As"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        />
+
+        <Button
+            android:id="@+id/instructor_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginRight="30dp"
+            android:background="@drawable/button_shape"
+            android:textAllCaps="false"
+            android:text="Instructor"
+            android:elevation="16dp"/>
+
+    <Button
+        android:id="@+id/new_client_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginRight="30dp"
+        android:background="@drawable/button_shape"
+        android:text="Wanna Be a Magayver"
+        android:textAllCaps="false"
+        android:elevation="16dp"/>
+
+    <Button
+        android:id="@+id/admin_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginRight="30dp"
+        android:background="@drawable/button_shape"
+        android:text="Admin"
+        android:textAllCaps="false"
+        android:elevation="16dp"
+       />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
