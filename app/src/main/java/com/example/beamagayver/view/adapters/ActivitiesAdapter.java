@@ -15,12 +15,12 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class activitiesAdapter extends RecyclerView.Adapter<activitiesAdapter.MyHolder> {
+public class ActivitiesAdapter extends RecyclerView.Adapter<ActivitiesAdapter.MyHolder> {
 
     Context mContext;
     ArrayList<Image> data;
 
-    public activitiesAdapter(Context mContext, ArrayList<Image> data) {
+    public ActivitiesAdapter(Context mContext, ArrayList<Image> data) {
         this.mContext = mContext;
         this.data = data;
     }
@@ -28,7 +28,7 @@ public class activitiesAdapter extends RecyclerView.Adapter<activitiesAdapter.My
     @NonNull
     @Override
     public MyHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(mContext).inflate(R.layout.activities_item , parent , false);
+        View itemView = LayoutInflater.from(mContext).inflate(R.layout.activities_item, parent , false);
         return new MyHolder(itemView);
     }
 
@@ -47,7 +47,7 @@ public class activitiesAdapter extends RecyclerView.Adapter<activitiesAdapter.My
 
         MyHolder(@NonNull View itemView) {
             super(itemView);
-            mImage = itemView.findViewById(R.id.activity_image);
+            mImage = itemView.findViewById(R.id.image_view);
 
         }
     }

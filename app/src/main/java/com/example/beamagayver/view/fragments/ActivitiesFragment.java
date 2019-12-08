@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.beamagayver.R;
 import com.example.beamagayver.pojo.Image;
-import com.example.beamagayver.view.adapters.SessionsAdapter;
+import com.example.beamagayver.view.adapters.ActivitiesAdapter;
 
 import java.util.ArrayList;
 
@@ -30,7 +30,7 @@ public class ActivitiesFragment extends Fragment {
         RV = view.findViewById(R.id.RV_activities);
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         RV.setLayoutManager(manager);
-        RV.setAdapter(new SessionsAdapter(getActivity() , imageList));
+        RV.setAdapter(new ActivitiesAdapter(getActivity() , imageList));
 
         return view;
     }

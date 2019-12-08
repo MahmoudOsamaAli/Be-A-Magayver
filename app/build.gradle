@@ -39,6 +39,7 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.0.0'
     //Circle Image View
     implementation 'de.hdodenhof:circleimageview:3.0.1'
-
+    //cardView
+    implementation "androidx.cardview:cardview:1.0.0"
     implementation 'com.shobhitpuri.custombuttons:google-signin:1.0.0'
 }

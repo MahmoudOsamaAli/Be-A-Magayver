@@ -84,6 +84,7 @@
         android:text="Admin"
         android:textAllCaps="false"
         android:elevation="16dp"
+        android:visibility="gone"
        />
     </LinearLayout>
 

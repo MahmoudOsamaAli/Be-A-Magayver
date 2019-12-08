@@ -1,21 +1,30 @@
 <resources>
     <string name="app_name">Be A Magayver</string>
-    <string name="qualifications">
-i.    Age.Normally, anyone applying for a driving instructor’s license must be at least 21 years old.
+<!--    <string name="qualifications">i. Age.Normally, anyone applying for a driving instructor’s license must be at least 21 years old.-->
 
-ii.	  Education.It is usually required that an applicant have a high school diploma or equivalent.
+<!--ii.	  Education.It is usually required that an applicant have a high school diploma or equivalent.-->
 
-iii.  Vision.Anyone applying for a driving instructor’s license must pass a vision test.
+<!--iii.  Vision.Anyone applying for a driving instructor’s license must pass a vision test.-->
 
-iv.   Physical examination.You will be required to pass a physical – and possibly a mental health – screening before becoming eligible.
+<!--iv.   Physical examination.You will be required to pass a physical – and possibly a mental health – screening before becoming eligible.-->
 
-v.    Background check.You will likely have to pass an in-depth background and criminal history check.
+<!--v.    Background check.You will likely have to pass an in-depth background and criminal history check.-->
 
-vi.   Driving record.You will likely have to present your driving record at the time of application. Excessive traffic offenses might disqualify you.
+<!--vi.   Driving record.You will likely have to present your driving record at the time of application. Excessive traffic offenses might disqualify you.-->
 
-vii.  Classes.Subject matter and classes will vary greatly depending on your state, but will include both classroom work and driving course work.
+<!--vii.  Classes.Subject matter and classes will vary greatly depending on your state, but will include both classroom work and driving course work.-->
+
+<!--</string>-->
+    <string name="qualifications">1- Age.Normally, anyone applying for a driving instructor’s license must be at least 21 years old.\n
+2- Education.It is usually required that an applicant have a high school diploma or equivalent.\n
+3- Vision.Anyone applying for a driving instructor’s license must pass a vision test.\n
+4- Physical examination.You will be required to pass a physical – and possibly a mental health – screening before becoming eligible.\n
+5- Background check.You will likely have to pass an in-depth background and criminal history check.\n
+6- Driving record.You will likely have to present your driving record at the time of application. Excessive traffic offenses might disqualify you.\n
+7- Classes.Subject matter and classes will vary greatly depending on your state, but will include both classroom work and driving course work.\n
 
 </string>
     <string name="sign_up_with_facebook">Sign Up With Facebooke</string>
     <string name="sign_up_with_twitter">Sign Up With Twitter</string>
+    <string name="post_contnent">I invite you to my session on tuesday neer cairo . the candinants will drive a 2020 manual car . the session duration will last for 2 hours .   here is my number : 01060413213</string>
 </resources>

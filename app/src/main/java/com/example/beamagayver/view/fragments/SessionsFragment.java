@@ -13,7 +13,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.beamagayver.R;
+import com.example.beamagayver.data.DummyData;
 import com.example.beamagayver.pojo.Image;
+import com.example.beamagayver.pojo.Post;
 import com.example.beamagayver.view.adapters.SessionsAdapter;
 
 import java.util.ArrayList;
@@ -21,16 +23,17 @@ import java.util.ArrayList;
 public class SessionsFragment extends Fragment {
 
     RecyclerView RV;
-    ArrayList<Image> imageList;
+    ArrayList<Post> posts;
 
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_sessions, container, false);
         RV = view.findViewById(R.id.RV_sessions);
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         RV.setLayoutManager(manager);
-        RV.setAdapter(new SessionsAdapter(getActivity() , imageList));
+        RV.setAdapter(new SessionsAdapter(getActivity() , posts));
 
         return view;
     }
@@ -43,19 +46,29 @@ public class SessionsFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        imageList = new ArrayList<>();
-        generateImageList();
-    }
+        posts = getPosts();
 
-    private void generateImageList() {
-        imageList.add(new Image("https://www.tripinsiders.net/wp-content/uploads/2016/12/sydnayxmas-768x512.jpg"));
-        imageList.add(new Image("https://www.tripinsiders.net/wp-content/uploads/2016/12/sydnayxmas-768x512.jpg"));
-        imageList.add(new Image("https://www.tripinsiders.net/wp-content/uploads/2016/12/sydnayxmas-768x512.jpg"));
-        imageList.add(new Image("https://www.tripinsiders.net/wp-content/uploads/2016/12/sydnayxmas-768x512.jpg"));
-        imageList.add(new Image("https://www.tripinsiders.net/wp-content/uploads/2016/12/sydnayxmas-768x512.jpg"));
-        imageList.add(new Image("https://www.tripinsiders.net/wp-content/uploads/2016/12/sydnayxmas-768x512.jpg"));
-        imageList.add(new Image("https://www.tripinsiders.net/wp-content/uploads/2016/12/sydnayxmas-768x512.jpg"));
-        imageList.add(new Image("https://www.tripinsiders.net/wp-content/uploads/2016/12/sydnayxmas-768x512.jpg"));
-        imageList.add(new Image("https://www.tripinsiders.net/wp-content/uploads/2016/12/sydnayxmas-768x512.jpg"));
+    }
+    private ArrayList<Post> getPosts() {
+        ArrayList<Post> data = new ArrayList<>();
+        Post post = new Post(R.drawable.ic_profile , "Mahmoud Osama" ,
+                "1 hour ago" ,getString(R.string.post_contnent));
+        data.add(post);
+        post = new Post(R.drawable.ic_profile , "Ali Osama" ,
+                "2 hour ago" ,getString(R.string.post_contnent));
+        data.add(post);
+        post = new Post(R.drawable.ic_profile , "Mahmoud Osama" ,
+                "1 hour ago" ,getString(R.string.post_contnent));
+        data.add(post);
+        post = new Post(R.drawable.ic_profile , "Ali Osama" ,
+                "2 hour ago" ,getString(R.string.post_contnent));
+        data.add(post);
+        post = new Post(R.drawable.ic_profile , "Mahmoud Osama" ,
+                "1 hour ago" ,getString(R.string.post_contnent));
+        data.add(post);
+        post = new Post(R.drawable.ic_profile , "Ali Osama" ,
+                "2 hour ago" ,getString(R.string.post_contnent));
+        data.add(post);
+        return data;
     }
 }
