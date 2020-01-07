@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:background="@android:color/white">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/image_welcome"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:visibility="visible"
+                android:src="@drawable/magayver"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+            <LinearLayout
+                android:id="@+id/methods"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="8dp"
+                android:visibility="visible"
+                android:layout_margin="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/image_welcome">
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:fontFamily="@font/montserrat"
+                    android:text="Register As"
+                    android:textSize="@dimen/text_header"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/instructor_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginRight="30dp"
+                    android:background="@drawable/button_shape"
+                    android:textAllCaps="false"
+                    android:fontFamily="@font/montserrat"
+                    android:textSize="@dimen/text_content"
+                    android:text="Instructor"
+                    android:elevation="16dp"/>
+
+                <Button
+                    android:id="@+id/new_client_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginRight="30dp"
+                    android:background="@drawable/button_shape"
+                    android:text="Wanna Be a Magayver"
+                    android:textAllCaps="false"
+                    android:fontFamily="@font/montserrat"
+                    android:textSize="@dimen/text_content"
+                    android:elevation="16dp"/>
+
+                <Button
+                    android:id="@+id/admin_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginRight="30dp"
+                    android:background="@drawable/button_shape"
+                    android:text="Admin"
+                    android:textAllCaps="false"
+                    android:fontFamily="@font/montserrat"
+                    android:textSize="@dimen/text_content"
+                    android:elevation="16dp"
+                    android:visibility="visible"
+                   />
+    </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,72 +1,34 @@
 package com.example.beamagayver.view.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.beamagayver.R;
+import com.example.beamagayver.Utilities.Utilities;
+import com.example.beamagayver.view.fragments.RegisterMethodsFragment;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class WelcomeActivity extends AppCompatActivity implements View.OnClickListener {
+public class WelcomeActivity extends AppCompatActivity {
 
-    @BindView(R.id.textView)
-    TextView textView;
-    @BindView(R.id.image_welcome)
-    ImageView welcomeImg;
-    @BindView(R.id.instructor_button)
-    Button button;
-    @BindView(R.id.new_client_button)
-    Button button2;
-    @BindView(R.id.linear1)
-    LinearLayout linear;
-    @BindView(R.id.admin_button)
-    Button button3;
-    Handler handler = new Handler();
-    Runnable runnable1 = new Runnable() {
-        @Override
-        public void run() {
-            welcomeImg.setVisibility(View.GONE);
-            linear.setVisibility(View.VISIBLE);
-        }
-    };
+    private static final String TAG = "WelcomeActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_welcome);
-        handler.postDelayed(runnable1, 4000);
+        setContentView(R.layout.activity_welcom);
+        if(savedInstanceState == null) {
+            Utilities.setFragments(this ,new RegisterMethodsFragment() , Utilities.RIGHT_TO_LEFT);
+        }
         ButterKnife.bind(this);
-        init();
-    }
-
-    private void init() {
-        try{
-            button.setOnClickListener(this);
-            button2.setOnClickListener(this);
-            button3.setOnClickListener(this);
-        }catch (Exception e){e.printStackTrace();}
     }
 
     @Override
-    public void onClick(View view) {
-        switch (view.getId()){
-            case R.id.instructor_button:
-                startActivity(new Intent(WelcomeActivity.this , InstructorContractActivity.class));
-                break;
-            case R.id.new_client_button:
-            case R.id.admin_button:
-                startActivity(new Intent(WelcomeActivity.this , SignUpActivity.class));
-                break;
+    public void onBackPressed() {
+        String fragmentName = Utilities.currFragment.getClass().getCanonicalName();
+        if(fragmentName != null && !fragmentName.isEmpty() &&
+                fragmentName.equals(RegisterMethodsFragment.class.getCanonicalName())){
+            finish();
         }
-
     }
 }

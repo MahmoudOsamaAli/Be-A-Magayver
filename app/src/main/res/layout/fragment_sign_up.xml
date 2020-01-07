@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:id="@+id/rellay2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        android:orientation="vertical"
+        android:layout_margin="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_sign_up"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sign Up"
+            android:paddingBottom="16dp"
+            android:textSize="@dimen/text_header"
+            android:textStyle="bold"
+            android:fontFamily="@font/montserrat"/>
+
+        <EditText
+            android:id="@+id/first_last_name_et"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/search_view_background"
+            android:fontFamily="sans-serif-light"
+            android:hint="enter first name and last name"
+            android:inputType="textPersonName"
+            android:paddingLeft="15dp"
+            android:paddingEnd="15dp"
+            android:paddingRight="15dp"
+            android:textSize="15sp"
+            android:theme="@style/ThemeOverlay.AppCompat.Light" />
+
+        <EditText
+            android:id="@+id/email_et"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/search_view_background"
+            android:fontFamily="sans-serif-light"
+            android:hint="e-mail"
+            android:inputType="textEmailAddress"
+            android:paddingLeft="15dp"
+            android:paddingEnd="15dp"
+            android:paddingRight="15dp"
+            android:textSize="15sp"
+            android:theme="@style/ThemeOverlay.AppCompat.Light" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:hintEnabled="false"
+            app:passwordToggleEnabled="true"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark">
+            <EditText
+                android:id="@+id/password_et"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/search_view_background"
+                android:fontFamily="sans-serif-light"
+                android:hint="password"
+                android:inputType="textPassword"
+                android:paddingLeft="15dp"
+                android:paddingEnd="15dp"
+                android:paddingRight="15dp"
+                android:textSize="15sp"
+                android:theme="@style/ThemeOverlay.AppCompat.Light" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:hintEnabled="false"
+            app:passwordToggleEnabled="true"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark">
+            <EditText
+                android:id="@+id/confirm_password_et"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/search_view_background"
+                android:fontFamily="sans-serif-light"
+                android:hint="confirm password"
+                android:inputType="textPassword"
+                android:paddingLeft="15dp"
+                android:paddingEnd="15dp"
+                android:paddingRight="15dp"
+                android:textSize="15sp"
+                android:theme="@style/ThemeOverlay.AppCompat.Light" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:layout_margin="8dp"
+            >
+            <Button
+                android:id="@+id/normal_sign_button"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/button_shape"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="8dp"
+                android:layout_marginBottom="4dp"
+                android:gravity="center"
+                android:text="Sign Up"
+                android:fontFamily="@font/montserrat"
+                android:textSize="@dimen/text_header"
+                android:textAllCaps="false"
+                android:textColor="@android:color/black" />
+        </FrameLayout>
+
+        <com.shobhitpuri.custombuttons.GoogleSignInButton
+            android:id="@+id/sign_google_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="4dp"
+            android:gravity="center"
+            android:text="Continue With Google"
+            app:isDarkTheme="false" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/fb_background_button"
+            android:layout_marginLeft="3dp"
+            android:layout_marginRight="3dp"
+            android:layout_marginBottom="8dp"
+            >
+            <Button
+                android:id="@+id/fb_login_button"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="8dp"
+                android:text="@string/sign_up_with_facebook"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/twitter_background_button"
+            android:layout_marginLeft="3dp"
+            android:layout_marginRight="3dp"
+            android:layout_marginBottom="8dp">
+            <Button
+                android:id="@+id/twitter_login_button"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="8dp"
+                android:text="@string/sign_up_with_twitter"
+                android:textColor="@android:color/white"
+                android:textAllCaps="false" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/tv_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:drawableStart="@drawable/ic_arrow_left"
+            android:drawableLeft="@drawable/ic_arrow_left"
+            android:focusable="true"
+            android:padding="8dp"
+            android:text="back"
+            android:fontFamily="@font/montserrat"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/text_header" />
+    </LinearLayout>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

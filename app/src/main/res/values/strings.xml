@@ -12,7 +12,7 @@
 
 <!--vi.   Driving record.You will likely have to present your driving record at the time of application. Excessive traffic offenses might disqualify you.-->
 
-<!--vii.  Classes.Subject matter and classes will vary greatly depending on your state, but will include both classroom work and driving course work.-->
+<!--vii.  Classes.Subject matter and classes will vary greatly depending on your LEFT_TO_RIGHT, but will include both classroom work and driving course work.-->
 
 <!--</string>-->
     <string name="qualifications">1- Age.Normally, anyone applying for a driving instructor’s license must be at least 21 years old.\n
@@ -27,4 +27,12 @@
     <string name="sign_up_with_facebook">Sign Up With Facebooke</string>
     <string name="sign_up_with_twitter">Sign Up With Twitter</string>
     <string name="post_contnent">I invite you to my session on tuesday neer cairo . the candinants will drive a 2020 manual car . the session duration will last for 2 hours .   here is my number : 01060413213</string>
+    <string name="phone_number">01066016555</string>
+    <string name="name_label">Name</string>
+    <string name="user_name">Mahmoud Osama</string>
+    <string name="email_label">Email</string>
+    <string name="fake_email">mahmoudosama@gmail.com</string>
+    <string name="fake_phone_number">Phone Number</string>
+    <string name="country_label">Country</string>
+    <string name="fake_country">Egypt</string>
 </resources>
