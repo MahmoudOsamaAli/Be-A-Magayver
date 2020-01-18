@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.beamagayver">
+
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -10,26 +11,46 @@
         android:roundIcon="@mipmap/ic_launcher2"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <activity android:name=".view.activities.HomeActivity"
-            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"/>
-
-        <activity android:name=".view.activities.AdminAuthActivity"
-            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"/>
-
-        <activity android:name=".view.activities.WelcomeActivity"
+        <activity android:name=".view.activities.AddPostActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:theme="@style/AppThemeWithActionBar"/>
+        <activity
+            android:name=".view.activities.HomeActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation" />
+        <activity
+            android:name=".view.activities.AdminAuthActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation" />
+        <activity
+            android:name=".view.activities.WelcomeActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
 
         <meta-data
-            android:name="preloaded_fonts"
-            android:resource="@array/preloaded_fonts" />
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
+
+        <activity
+            android:name="com.facebook.FacebookActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:label="@string/app_name" />
+        <activity
+            android:name="com.facebook.CustomTabActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="@string/fb_login_protocol_scheme" />
+            </intent-filter>
+        </activity>
     </application>
+
 </manifest>

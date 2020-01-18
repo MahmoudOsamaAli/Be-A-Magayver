@@ -1,7 +1,6 @@
 package com.example.beamagayver.view.fragments;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,11 +11,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.example.beamagayver.R;
 import com.example.beamagayver.Utilities.Utilities;
-import com.example.beamagayver.view.activities.WelcomeActivity;
+import com.example.beamagayver.view.fragments.LoginFragment.RegisterMethodsFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -58,6 +56,6 @@ public class ContractFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        Utilities.setFragments(getActivity() , new SignUpFragment(), Utilities.RIGHT_TO_LEFT);
+        Utilities.setFragments(getActivity() , new RegisterMethodsFragment(), Utilities.RIGHT_TO_LEFT);
     }
 }

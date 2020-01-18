@@ -36,6 +36,7 @@
                 android:id="@+id/methods"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:animateLayoutChanges="true"
                 android:orientation="vertical"
                 android:gravity="center"
                 android:padding="8dp"
@@ -52,7 +53,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:fontFamily="@font/montserrat"
-                    android:text="Register As"
+                    android:text="Login As"
                     android:textSize="@dimen/text_header"
                     android:textStyle="bold" />
 
@@ -69,6 +70,63 @@
                     android:textSize="@dimen/text_content"
                     android:text="Instructor"
                     android:elevation="16dp"/>
+                <LinearLayout
+                    android:id="@+id/instructor_login_methods"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:orientation="vertical">
+                    <com.shobhitpuri.custombuttons.GoogleSignInButton
+                        android:id="@+id/google_for_instructor"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="4dp"
+                        android:gravity="center"
+                        android:text="Continue With Google"
+                        app:isDarkTheme="false" />
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:background="@drawable/fb_background_button"
+                        android:layout_marginLeft="3dp"
+                        android:layout_marginRight="3dp"
+                        android:layout_marginBottom="8dp"
+                        >
+                        <Button
+                            android:id="@+id/fb_for_instructor"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="?android:attr/selectableItemBackground"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:padding="8dp"
+                            android:text="@string/sign_up_with_facebook"
+                            android:textAllCaps="false"
+                            android:textColor="@android:color/white" />
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:background="@drawable/twitter_background_button"
+                        android:layout_marginLeft="3dp"
+                        android:layout_marginRight="3dp"
+                        android:layout_marginBottom="8dp">
+                        <Button
+                            android:id="@+id/twitter_for_instructor"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="?android:attr/selectableItemBackground"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:padding="8dp"
+                            android:text="@string/sign_up_with_twitter"
+                            android:textColor="@android:color/white"
+                            android:textAllCaps="false" />
+                    </FrameLayout>
+                </LinearLayout>
 
                 <Button
                     android:id="@+id/new_client_button"
@@ -83,6 +141,74 @@
                     android:fontFamily="@font/montserrat"
                     android:textSize="@dimen/text_content"
                     android:elevation="16dp"/>
+
+                <LinearLayout
+                    android:id="@+id/user_login_methods"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:orientation="vertical">
+                    <com.shobhitpuri.custombuttons.GoogleSignInButton
+                        android:id="@+id/google_for_user"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="4dp"
+                        android:gravity="center"
+                        android:text="Continue With Google"
+                        app:isDarkTheme="false" />
+
+<!--                    <FrameLayout-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="40dp"-->
+<!--                        android:background="@drawable/fb_background_button"-->
+<!--                        android:layout_marginLeft="3dp"-->
+<!--                        android:layout_marginRight="3dp"-->
+<!--                        android:layout_marginBottom="8dp"-->
+<!--                        >-->
+<!--                        <Button-->
+<!--                            android:id="@+id/fb_for_user"-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="match_parent"-->
+<!--                            android:background="?android:attr/selectableItemBackground"-->
+<!--                            android:clickable="true"-->
+<!--                            android:focusable="true"-->
+<!--                            android:padding="8dp"-->
+<!--                            android:text="@string/sign_up_with_facebook"-->
+<!--                            android:textAllCaps="false"-->
+<!--                            android:textColor="@android:color/white" />-->
+<!--                    </FrameLayout>-->
+                    <com.facebook.login.widget.LoginButton
+                        android:id="@+id/fb_for_user"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:padding="8dp"
+                        android:text="@string/sign_up_with_facebook"
+                        android:textAllCaps="false"
+                        android:textColor="@android:color/white" />
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:background="@drawable/twitter_background_button"
+                        android:layout_marginLeft="3dp"
+                        android:layout_marginRight="3dp"
+                        android:layout_marginBottom="8dp">
+                        <Button
+                            android:id="@+id/twitter_for_user"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="?android:attr/selectableItemBackground"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:padding="8dp"
+                            android:text="@string/sign_up_with_twitter"
+                            android:textColor="@android:color/white"
+                            android:textAllCaps="false" />
+                    </FrameLayout>
+                </LinearLayout>
 
                 <Button
                     android:id="@+id/admin_button"

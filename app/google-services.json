@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "23276356245",
+    "firebase_url": "https://be-a-magayver.firebaseio.com",
+    "project_id": "be-a-magayver",
+    "storage_bucket": "be-a-magayver.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:23276356245:android:a02fe97608a473f019d19c",
+        "android_client_info": {
+          "package_name": "com.example.beamagayver"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "23276356245-17mj7o67chg18pqqb74bl4aa39jlv71u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.beamagayver",
+            "certificate_hash": "c305cc9ae68a712f481122b5f77d315802ecffe6"
+          }
+        },
+        {
+          "client_id": "23276356245-obntudbj08mqqtanlkg5un3s8v6mv1q1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCDjFgCiUhazm_fvlpH7nFW1cR80AFm3U0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "23276356245-obntudbj08mqqtanlkg5un3s8v6mv1q1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

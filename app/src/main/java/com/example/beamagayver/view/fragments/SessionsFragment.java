@@ -1,6 +1,8 @@
 package com.example.beamagayver.view.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,17 +15,27 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.beamagayver.R;
+import com.example.beamagayver.Utilities.Utilities;
 import com.example.beamagayver.data.DummyData;
 import com.example.beamagayver.pojo.Image;
 import com.example.beamagayver.pojo.Post;
+import com.example.beamagayver.view.activities.AddPostActivity;
 import com.example.beamagayver.view.adapters.SessionsAdapter;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
-public class SessionsFragment extends Fragment {
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+public class SessionsFragment extends Fragment implements View.OnClickListener{
+
+    private static final String TAG = "SessionsFragment";
 
     RecyclerView RV;
     ArrayList<Post> posts;
+    @BindView(R.id.add_post)
+    FloatingActionButton addPost;
 
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -40,7 +52,16 @@ public class SessionsFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        ButterKnife.bind(this , view);
+        init();
+    }
 
+    private void init() {
+        try{
+            addPost.setOnClickListener(this);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -70,5 +91,13 @@ public class SessionsFragment extends Fragment {
                 "2 hour ago" ,getString(R.string.post_contnent));
         data.add(post);
         return data;
+    }
+
+    @Override
+    public void onClick(View view) {
+        if(view.getId() == R.id.add_post){
+            Log.i(TAG, "onClick: begin transaction for add post Activity");
+            startActivity(new Intent(getContext() , AddPostActivity.class));
+        }
     }
 }

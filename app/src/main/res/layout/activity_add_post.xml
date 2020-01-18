@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:background="@android:color/white"
+    tools:context=".view.activities.AddPostActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:paddingBottom="15dp">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/post_owner_imaage"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_margin="8dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_profile"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/post_owner_name_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:text="Mahmoud Osama"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/post_owner_imaage"
+            app:layout_constraintStart_toEndOf="@id/post_owner_imaage"
+            app:layout_constraintTop_toTopOf="@id/post_owner_imaage" />
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/post_text_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:hintAnimationEnabled="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/post_owner_imaage">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/post_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:gravity="top"
+                android:hint="@string/add_caption"
+                android:minHeight="100dp"
+                android:padding="8dp"
+                android:textColorHint="@color/gray_dark" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <View
+            android:id="@+id/line1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@color/gray_light"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/post_text_input" />
+
+        <TextView
+            android:id="@+id/car_details_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="Session Details"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/line1" />
+
+        <Button
+            android:id="@+id/car_details_button"
+            android:layout_width="120dp"
+            android:layout_height="40dp"
+            android:layout_margin="12dp"
+            android:background="@drawable/button_shape"
+            android:text="About Car"
+            android:drawableEnd="@drawable/ic_arrow_right"
+            android:drawableRight="@drawable/ic_arrow_right"
+            android:textAlignment="center"
+            android:fontFamily="@font/montserrat"
+            android:textAllCaps="false"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/car_details_label"
+             />
+
+        <TextView
+            android:id="@+id/car_details_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="60dp"
+            android:layout_marginLeft="30dp"
+            android:textSize="16sp"
+            android:textColor="@android:color/darker_gray"
+            android:textStyle="bold"
+            android:fontFamily="@font/montserrat"
+            app:layout_constraintTop_toTopOf="@id/car_details_button"
+            app:layout_constraintStart_toEndOf="@id/car_details_button"
+            app:layout_constraintBottom_toBottomOf="@id/car_details_button"
+            android:text="e.g Toyota Corolla 2010" />
+
+        <Spinner
+            android:id="@+id/session_duration_spinner"
+            android:layout_width="120dp"
+            android:layout_height="40dp"
+            android:layout_margin="12dp"
+            android:spinnerMode="dialog"
+            android:entries="@array/duration_array"
+            android:background="@drawable/spinner_shape"
+            android:textAlignment="center"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/car_details_button" />
+
+        <TextView
+            android:id="@+id/session_duration_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@android:color/darker_gray"
+            android:textStyle="bold"
+            android:fontFamily="@font/montserrat"
+            app:layout_constraintBottom_toBottomOf="@id/session_duration_spinner"
+            app:layout_constraintStart_toStartOf="@id/car_details_tv"
+            app:layout_constraintTop_toTopOf="@id/session_duration_spinner"
+            android:text="e.g 60 mins" />
+        <Button
+            android:id="@+id/start_date_label"
+            android:layout_width="120dp"
+            android:layout_height="40dp"
+            android:layout_margin="12dp"
+            android:background="@drawable/button_shape"
+            android:fontFamily="@font/montserrat"
+            android:drawableEnd="@drawable/ic_arrow_right"
+            android:drawableRight="@drawable/ic_arrow_right"
+            android:textAlignment="center"
+            android:text="Day"
+            android:textAllCaps="false"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/session_duration_spinner" />
+
+        <TextView
+            android:id="@+id/start_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@android:color/darker_gray"
+            android:textStyle="bold"
+            android:fontFamily="@font/montserrat"
+            app:layout_constraintBottom_toBottomOf="@id/start_date_label"
+            app:layout_constraintStart_toStartOf="@id/session_duration_tv"
+            app:layout_constraintTop_toTopOf="@id/start_date_label"
+            android:text="e.g 20/2/2020" />
+
+        <Button
+            android:id="@+id/start_time_label"
+            android:layout_width="120dp"
+            android:layout_height="40dp"
+            android:layout_margin="12dp"
+            android:background="@drawable/button_shape"
+            android:text="Start Time"
+            android:drawableEnd="@drawable/ic_arrow_right"
+            android:drawableRight="@drawable/ic_arrow_right"
+            android:textAlignment="center"
+            android:fontFamily="@font/montserrat"
+            android:textAllCaps="false"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/start_date_label" />
+
+        <TextView
+            android:id="@+id/start_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@android:color/darker_gray"
+            android:textStyle="bold"
+            android:fontFamily="@font/montserrat"
+            app:layout_constraintBottom_toBottomOf="@id/start_time_label"
+            app:layout_constraintStart_toStartOf="@id/session_duration_tv"
+            app:layout_constraintTop_toTopOf="@id/start_time_label"
+            android:text="e.g 2:20 PM" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

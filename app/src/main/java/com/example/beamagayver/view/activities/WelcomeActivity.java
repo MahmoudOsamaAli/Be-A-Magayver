@@ -5,7 +5,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.beamagayver.R;
 import com.example.beamagayver.Utilities.Utilities;
-import com.example.beamagayver.view.fragments.RegisterMethodsFragment;
+import com.example.beamagayver.view.fragments.LoginFragment.RegisterMethodsFragment;
 
 import butterknife.ButterKnife;
 
