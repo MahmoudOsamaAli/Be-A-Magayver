@@ -2,6 +2,8 @@ package com.example.beamagayver.view.activities;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -12,6 +14,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -19,6 +22,7 @@ import android.widget.TimePicker;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.beamagayver.R;
 import com.example.beamagayver.Utilities.DatePickerFragment;
@@ -26,6 +30,8 @@ import com.example.beamagayver.Utilities.Dialog;
 import com.example.beamagayver.Utilities.TimePickerFragment;
 import com.example.beamagayver.data.FireStoreProcess;
 import com.example.beamagayver.pojo.Post;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -37,9 +43,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class AddPostActivity extends AppCompatActivity implements View.OnClickListener,
-        TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener, Dialog.DialogListener, AdapterView.OnItemSelectedListener {
+public class AddPostActivity extends AppCompatActivity implements View.OnClickListener
+        , TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener
+        , Dialog.DialogListener, AdapterView.OnItemSelectedListener{
     private static final String TAG = "AddPostActivity";
+    public Location mCurrentLocation;
+    private LatLng mSelectedLocation = null;
     FirebaseUser user;
     @BindView(R.id.start_time_label)
     Button startTimeButton;
@@ -63,6 +72,18 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
     CircleImageView postOwnerImaage;
     @BindView(R.id.post_owner_name_tv)
     TextView postOwnerNameTv;
+    @BindView(R.id.phone_number_label)
+    Button phoneNumberButton;
+    @BindView(R.id.phone_number)
+    TextView phoneNumber;
+    @BindView(R.id.add_location_fab)
+    FloatingActionButton addLocationFab;
+    ImageView mUndoMarker;
+    @BindView(R.id.fragment_add_place_locations_rv)
+    RecyclerView mLocationsRV;
+
+    Button mConfirmLocation;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,10 +103,15 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
             startTimeButton.setOnClickListener(this);
             startDateButton.setOnClickListener(this);
             carBrandButton.setOnClickListener(this);
+            phoneNumberButton.setOnClickListener(this);
+            addLocationFab.setOnClickListener(this);
+            mUndoMarker.setOnClickListener(this);
+            mConfirmLocation.setOnClickListener(this);
         } catch (Exception e) {
             Log.i(TAG, "init: " + e.getMessage());
         }
     }
+
 
     private void setUserInfo() {
         postOwnerNameTv.setText(user.getDisplayName());
@@ -112,13 +138,18 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
         if (item.getItemId() == R.id.post) {
             createPost();
             finish();
+            Log.i(TAG, "onOptionsItemSelected: finish the activity");
+        } else if (item.getItemId() == android.R.id.home) {
+            Log.i(TAG, "onOptionsItemSelected: return to home");
+            onBackPressed();
         }
-        return true;
+        return super.onOptionsItemSelected(item);
     }
 
     private void createPost() {
         try {
             if (user != null) {
+
                 String ownerName = user.getDisplayName();
                 String ownerImage = user.getPhotoUrl().toString();
                 String postTime = getTime();
@@ -129,8 +160,11 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                 String startDate = startDateTV.getText().toString();
                 String startTime = startTimeTV.getText().toString();
                 String id = user.getUid();
-                Post post = new Post(ownerName, id, ownerImage, postTime, caption, carDetails, duration, startDate, startTime);
+                String number = phoneNumber.getText().toString();
+                Post post = new Post(ownerName, id, ownerImage, postTime, caption, carDetails, duration
+                        , startDate, startTime, 0, 0, number , mSelectedLocation);
                 FireStoreProcess.addPostToUser(user, post);
+
                 Log.i(TAG, "createPost: successfully");
             }
         } catch (Exception e) {
@@ -138,6 +172,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
             Log.i(TAG, "createPost: " + e.getMessage());
         }
     }
+
 
     private String getTime() {
         return DateFormat.format("dd/MM/yyyy hh:mm a", new Date()).toString();
@@ -157,11 +192,15 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                 datePicker.show(getSupportFragmentManager(), "Date Picker");
                 break;
             case R.id.car_details_button:
-                Dialog dialog = new Dialog();
+                Dialog dialog = new Dialog("Car Details");
                 dialog.show(getSupportFragmentManager(), "Car Details");
                 break;
-            case android.R.id.home:
-                onBackPressed();
+            case R.id.phone_number_label:
+                Dialog dialog1 = new Dialog("Phone Number");
+                dialog1.show(getSupportFragmentManager(), "Phone Number");
+                break;
+            case  R.id.add_location_fab:
+                startActivity(new Intent(this , MapsActivity.class));
                 break;
         }
     }
@@ -179,9 +218,13 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     @Override
-    public void applyText(String brand, String model, String year) {
-        String s = brand + " " + model + " " + year;
-        carDetailsTV.setText(s);
+    public void applyCarDetails(String text) {
+        carDetailsTV.setText(text);
+    }
+
+    @Override
+    public void applyPhoneNumber(String number) {
+        phoneNumber.setText(number);
     }
 
     @Override
@@ -194,4 +237,5 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
     public void onNothingSelected(AdapterView<?> adapterView) {
 
     }
+
 }

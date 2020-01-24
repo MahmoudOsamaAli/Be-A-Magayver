@@ -1,39 +1,87 @@
 package com.example.beamagayver.pojo;
 
-public class Post {
+import com.google.android.gms.maps.model.LatLng;
+
+public class Post implements Comparable<Post> {
+    private String mPostID;
     private String mOwnerID;
     private String mOwnerName;
     private String mOwnerImage;
     private String mPostTime;
     private String mPostCaption;
-    private String mCarName;
-    private String mCarModel;
-    private String mCarColor;
+    private String mCarDetails;
     private String mDuration;
     private String mStartDate;
     private String mStartTime;
-    private int ImageLink;
-    private String mName;
-    private String mTime;
-    private String mPostContent;
+    private int mJoined;
+    private int mLikes;
+    private String mPhoneNumber;
+    private LatLng mSelectedLocation;
 
-    public Post(int imageLink, String mName, String mTime, String mPostContent) {
-        ImageLink = imageLink;
-        this.mName = mName;
-        this.mTime = mTime;
-        this.mPostContent = mPostContent;
+
+    public Post() {
     }
 
-    public Post(String name,String OwnerID, String ownerImage, String postTime, String caption, String carDetails, String duration, String startDate, String startTime) {
+    public Post(String name, String OwnerID
+            , String ownerImage, String postTime
+            , String caption, String carDetails
+            , String duration, String startDate
+            , String startTime, int joined
+            , int likes, String phoneNumber
+            , LatLng location) {
         this.mOwnerName = name;
         this.mOwnerImage = ownerImage;
         this.mOwnerID = OwnerID;
         this.mPostTime = postTime;
         this.mPostCaption = caption;
-        this.mCarModel = carDetails;
+        this.mCarDetails = carDetails;
         this.mDuration = duration;
         this.mStartDate = startDate;
         this.mStartTime = startTime;
+        this.mJoined = joined;
+        this.mLikes = likes;
+        this.mPhoneNumber = phoneNumber;
+        this.mSelectedLocation = location;
+    }
+
+    public LatLng getmSelectedLocation() {
+        return mSelectedLocation;
+    }
+
+    public void setmSelectedLocation(LatLng mSelectedLocation) {
+        this.mSelectedLocation = mSelectedLocation;
+    }
+
+    public int getmJoined() {
+        return mJoined;
+    }
+
+    public void setmJoined(int mJoined) {
+        this.mJoined = mJoined;
+    }
+
+    public int getmLikes() {
+        return mLikes;
+    }
+
+    public void setmLikes(int mLikes) {
+        this.mLikes = mLikes;
+    }
+
+    public String getmPhoneNumber() {
+        return mPhoneNumber;
+    }
+
+    public void setmPhoneNumber(String mPhoneNumber) {
+        this.mPhoneNumber = mPhoneNumber;
+    }
+
+    public String getmPostID() {
+        return mPostID;
+    }
+
+    public void setmPostID(String mPostID) {
+        this.mPostID = mPostID;
     }
 
     public String getmOwnerID() {
@@ -84,28 +132,12 @@ public class Post {
         this.mPostCaption = mPostCaption;
     }
 
-    public String getmCarName() {
-        return mCarName;
+    public String getmCarDetails() {
+        return mCarDetails;
     }
 
-    public void setmCarName(String mCarName) {
-        this.mCarName = mCarName;
-    }
-
-    public String getmCarModel() {
-        return mCarModel;
-    }
-
-    public void setmCarModel(String mCarModel) {
-        this.mCarModel = mCarModel;
-    }
-
-    public String getmCarColor() {
-        return mCarColor;
-    }
-
-    public void setmCarColor(String mCarColor) {
-        this.mCarColor = mCarColor;
+    public void setmCarDetails(String mCarDetails) {
+        this.mCarDetails = mCarDetails;
     }
 
     public String getmDuration() {
@@ -124,35 +156,9 @@ public class Post {
         this.mStartDate = mStartDate;
     }
 
-    public int getImageLink() {
-        return ImageLink;
-    }
+    @Override
+    public int compareTo(Post o) {
 
-    public void setImageLink(int imageLink) {
-        ImageLink = imageLink;
-    }
-
-    public String getmName() {
-        return mName;
-    }
-
-    public void setmName(String mName) {
-        this.mName = mName;
-    }
-
-    public String getmTime() {
-        return mTime;
-    }
-
-    public void setmTime(String mTime) {
-        this.mTime = mTime;
-    }
-
-    public String getmPostContent() {
-        return mPostContent;
-    }
-
-    public void setmPostContent(String mPostContent) {
-        this.mPostContent = mPostContent;
+        return mPostTime.compareTo(o.mPostTime);
     }
 }

@@ -1,50 +1,56 @@
 package com.example.beamagayver.Utilities;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
 
 import com.example.beamagayver.R;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
-import java.util.Objects;
-
-public class Dialog extends DialogFragment {
+public class Dialog extends BottomSheetDialogFragment {
     private static final String TAG = "Dialog";
 
-    private EditText carBrand;
-    private EditText carModel;
-    private EditText carYear;
+    private EditText editText;
     DialogListener listener;
-    @NonNull
-    @Override
-    public android.app.Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        LayoutInflater inflater = Objects.requireNonNull(getActivity()).getLayoutInflater();
-        View v = inflater.inflate(R.layout.dialog_fragment , null);
-        carBrand = v.findViewById(R.id.car_brand_edit_text);
-        carModel = v.findViewById(R.id.car_model_edit_text);
-        carYear = v.findViewById(R.id.car_model_year_edit_text);
-        builder.setView(v)
-                .setTitle("Car Details")
-                .setNegativeButton("Cancel", (dialogInterface, i) -> {
+    private Button okButton;
+    private Button cancelButton;
+    String title;
 
-                })
-                .setPositiveButton("Ok", (dialogInterface, i) -> {
-                    String brand = carBrand.getText().toString();
-                    String model = carModel.getText().toString();
-                    String year = carYear.getText().toString();
-                    listener.applyText(brand , model , year);
-                });
-        return builder.create();
+    public Dialog(String title) {
+        this.title = title;
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.dialog_fragment , container , false);
+        editText = v.findViewById(R.id.car_brand_edit_text);
+        okButton = v.findViewById(R.id.ok_button);
+        cancelButton = v.findViewById(R.id.cancel_button);
+        if(title.equals("Car Details")) {
+            editText.setHint("e.g toyota corolla 2018");
+            okButton.setOnClickListener(view -> {
+                listener.applyCarDetails(editText.getText().toString());
+                dismiss();
+            });
+        }
+        else if(title.equals("Phone Number")){
+            editText.setHint("Enter active phone number");
+            okButton.setOnClickListener(view -> {
+                listener.applyPhoneNumber(editText.getText().toString());
+                dismiss();
+            });
+        }
+        cancelButton.setOnClickListener(view -> dismiss());
+        return v;
     }
 
     @Override
@@ -58,7 +64,9 @@ public class Dialog extends DialogFragment {
         }
     }
 
+
     public interface DialogListener{
-        void applyText(String brand , String model , String year);
+        void applyCarDetails(String brand );
+        void applyPhoneNumber(String brand );
     }
 }

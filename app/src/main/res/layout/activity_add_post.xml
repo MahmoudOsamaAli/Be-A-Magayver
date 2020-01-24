@@ -102,11 +102,12 @@
             android:id="@+id/car_details_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="60dp"
+            android:layout_marginStart="30dp"
             android:layout_marginLeft="30dp"
             android:textSize="16sp"
             android:textColor="@android:color/darker_gray"
             android:textStyle="bold"
+            android:maxLines="2"
             android:fontFamily="@font/montserrat"
             app:layout_constraintTop_toTopOf="@id/car_details_button"
             app:layout_constraintStart_toEndOf="@id/car_details_button"
@@ -192,5 +193,54 @@
             app:layout_constraintStart_toStartOf="@id/session_duration_tv"
             app:layout_constraintTop_toTopOf="@id/start_time_label"
             android:text="e.g 2:20 PM" />
+
+        <Button
+            android:id="@+id/phone_number_label"
+            android:layout_width="120dp"
+            android:layout_height="40dp"
+            android:layout_margin="12dp"
+            android:background="@drawable/button_shape"
+            android:text="Phone Number"
+            android:drawableEnd="@drawable/ic_arrow_right"
+            android:drawableRight="@drawable/ic_arrow_right"
+            android:textAlignment="center"
+            android:fontFamily="@font/montserrat"
+            android:textAllCaps="false"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/start_time_label" />
+
+        <TextView
+            android:id="@+id/phone_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@android:color/darker_gray"
+            android:textStyle="bold"
+            android:fontFamily="@font/montserrat"
+            app:layout_constraintBottom_toBottomOf="@id/phone_number_label"
+            app:layout_constraintStart_toStartOf="@id/session_duration_tv"
+            app:layout_constraintTop_toTopOf="@id/phone_number_label"
+            android:text="01060413213" />
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/add_location_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:elevation="8dp"
+            android:src="@drawable/ic_add_location_black_24dp"
+            app:backgroundTint="@color/colorAccent"
+            app:fabSize="auto"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/phone_number"
+            tools:targetApi="lollipop" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/fragment_add_place_locations_rv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/add_location_fab" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
