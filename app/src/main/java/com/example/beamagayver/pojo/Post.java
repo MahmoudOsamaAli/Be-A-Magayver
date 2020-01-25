@@ -1,6 +1,5 @@
 package com.example.beamagayver.pojo;
 
-import com.google.android.gms.maps.model.LatLng;
 
 public class Post implements Comparable<Post> {
     private String mPostID;
@@ -16,19 +15,16 @@ public class Post implements Comparable<Post> {
     private int mJoined;
     private int mLikes;
     private String mPhoneNumber;
-    private LatLng mSelectedLocation;
+    private LocationModel mLocation;
 
 
     public Post() {
     }
 
-    public Post(String name, String OwnerID
-            , String ownerImage, String postTime
-            , String caption, String carDetails
-            , String duration, String startDate
-            , String startTime, int joined
-            , int likes, String phoneNumber
-            , LatLng location) {
+    public Post(String name, String OwnerID, String ownerImage, String postTime
+            , String caption, String carDetails, String duration, String startDate
+            , String startTime, int joined, int likes, String phoneNumber, LocationModel location) {
+
         this.mOwnerName = name;
         this.mOwnerImage = ownerImage;
         this.mOwnerID = OwnerID;
@@ -41,15 +37,15 @@ public class Post implements Comparable<Post> {
         this.mJoined = joined;
         this.mLikes = likes;
         this.mPhoneNumber = phoneNumber;
-        this.mSelectedLocation = location;
+        this.mLocation = location;
     }
 
-    public LatLng getmSelectedLocation() {
-        return mSelectedLocation;
+    public LocationModel getmLocation() {
+        return mLocation;
     }
 
-    public void setmSelectedLocation(LatLng mSelectedLocation) {
-        this.mSelectedLocation = mSelectedLocation;
+    public void setmLocation(LocationModel mLocation) {
+        this.mLocation = mLocation;
     }
 
     public int getmJoined() {

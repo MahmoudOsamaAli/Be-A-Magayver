@@ -18,34 +18,32 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.beamagayver.R;
 import com.example.beamagayver.data.FireStoreProcess;
-import com.example.beamagayver.data.onListenToFireStore;
 import com.example.beamagayver.pojo.Post;
 import com.example.beamagayver.view.activities.AddPostActivity;
-import com.example.beamagayver.view.adapters.SessionsAdapter;
+import com.example.beamagayver.view.adapters.SessionAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class SessionsFragment extends Fragment implements View.OnClickListener, onListenToFireStore {
+public class SessionsFragment extends Fragment implements View.OnClickListener {
 
     private static final String TAG = "SessionsFragment";
-
-    ArrayList<Post> posts;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private CollectionReference reference = db.collection("Sessions");
+    private SessionAdapter adapter1;
     @BindView(R.id.RV_sessions)
     RecyclerView RV;
     @BindView(R.id.add_post)
     FloatingActionButton addPost;
-    SessionsAdapter adapter;
     @BindView(R.id.progress_bar)
     ProgressBar progressBar;
-    FireStoreProcess process;
     @BindView(R.id.no_sessions_image)
     ImageView noSessionsImage;
     @BindView(R.id.no_sessions_TV)
@@ -61,97 +59,46 @@ public class SessionsFragment extends Fragment implements View.OnClickListener, 
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
         progressBar.setVisibility(View.VISIBLE);
-        posts = new ArrayList<>();
-        getPosts();
-
+        init();
     }
-
 
     private void init() {
         try {
-            adapter = new SessionsAdapter(getContext(), posts);
-            LinearLayoutManager manager = new LinearLayoutManager(getActivity());
-            RV.setLayoutManager(manager);
-            RV.setAdapter(adapter);
-            Log.i(TAG, "init: called");
-            if (posts != null && !posts.isEmpty()) {
-                progressBar.setVisibility(View.GONE);
-                noSessionsImage.setVisibility(View.GONE);
-                noSessionsTV.setVisibility(View.GONE);
-            } else {
-                Log.i(TAG, "init: posts is null");
-                noSessionsImage.setVisibility(View.VISIBLE);
-                noSessionsTV.setVisibility(View.VISIBLE);
-            }
-
+            Query query = reference.orderBy("mPostTime", Query.Direction.DESCENDING);
+            FirestoreRecyclerOptions<Post> options = new FirestoreRecyclerOptions.Builder<Post>()
+                    .setQuery(query, Post.class)
+                    .build();
+            adapter1 = new SessionAdapter(options, getContext());
+            RV.setHasFixedSize(true);
+            RV.setLayoutManager(new LinearLayoutManager(getContext()));
+            RV.setAdapter(adapter1);
+            progressBar.setVisibility(View.GONE);
+            noSessionsImage.setVisibility(View.GONE);
+            noSessionsTV.setVisibility(View.GONE);
         } catch (Exception e) {
             e.printStackTrace();
             Log.i(TAG, "init: " + e.getMessage());
         }
-        process = new FireStoreProcess(this);
-        FireStoreProcess.listenToFireBase(posts);
         addPost.setOnClickListener(this);
     }
 
-    private void getPosts() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference sessions = db.collection("Sessions");
-        sessions.get().addOnSuccessListener(result -> {
-            if (result != null) {
-                for (DocumentSnapshot doc : result) {
-                    Post p = doc.toObject(Post.class);
-                    posts.add(p);
-                    Log.i(TAG, "onComplete: posts size during the loop = " + posts.size());
-                }
-            }
-        }).addOnCompleteListener(Objects.requireNonNull(getActivity()), task ->
-                init());
-                Log.i(TAG, "getPosts: posts size after the task = " + posts.size());
-//                init());
-
+    @Override
+    public void onStart() {
+        super.onStart();
+        adapter1.startListening();
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        adapter1.stopListening();
+    }
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.add_post) {
             Log.i(TAG, "onClick: begin transaction for add post Activity");
             startActivity(new Intent(getContext(), AddPostActivity.class));
         }
-    }
-
-    @Override
-    public void onPostAdded(Post post) {
-        Log.i(TAG, "onPostAdded: interface is called");
-        if (post != null) {
-            posts.add(post);
-            adapter.notifyDataSetChanged();
-        }
-    }
-
-    @Override
-    public void onPostModified(Post post) {
-        Log.i(TAG, "onPostModified: interface is called");
-        try {
-            if (post != null) {
-                String postID = post.getmPostID();
-                for (Post p : posts) {
-                    if (postID != null && p.getmPostID().equals(postID)) {
-                        posts.set(posts.indexOf(p), post);
-                        adapter.notifyDataSetChanged();
-                    }
-                }
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            Log.i(TAG, "onPostModified: " + ex.getMessage());
-        }
-    }
-
-    @Override
-    public void onPostDeleted(Post post) {
-        Log.i(TAG, "onPostDeleted: interface is called");
-        posts.remove(post);
-        adapter.notifyDataSetChanged();
     }
 
 

@@ -13,7 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.beamagayver.R;
-import com.example.beamagayver.Utilities.Utilities;
+import com.example.beamagayver.Utilities.ChangeFragments;
 import com.example.beamagayver.view.fragments.LoginFragment.RegisterMethodsFragment;
 
 import butterknife.BindView;
@@ -56,6 +56,6 @@ public class ContractFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        Utilities.setFragments(getActivity() , new RegisterMethodsFragment(), Utilities.RIGHT_TO_LEFT);
+        ChangeFragments.setFragments(getActivity() , new RegisterMethodsFragment(), ChangeFragments.RIGHT_TO_LEFT);
     }
 }

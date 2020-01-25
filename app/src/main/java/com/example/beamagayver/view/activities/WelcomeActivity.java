@@ -4,7 +4,7 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.beamagayver.R;
-import com.example.beamagayver.Utilities.Utilities;
+import com.example.beamagayver.Utilities.ChangeFragments;
 import com.example.beamagayver.view.fragments.LoginFragment.RegisterMethodsFragment;
 
 import butterknife.ButterKnife;
@@ -18,14 +18,14 @@ public class WelcomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcom);
         if(savedInstanceState == null) {
-            Utilities.setFragments(this ,new RegisterMethodsFragment() , Utilities.RIGHT_TO_LEFT);
+            ChangeFragments.setFragments(this ,new RegisterMethodsFragment() , ChangeFragments.RIGHT_TO_LEFT);
         }
         ButterKnife.bind(this);
     }
 
     @Override
     public void onBackPressed() {
-        String fragmentName = Utilities.currFragment.getClass().getCanonicalName();
+        String fragmentName = ChangeFragments.currFragment.getClass().getCanonicalName();
         if(fragmentName != null && !fragmentName.isEmpty() &&
                 fragmentName.equals(RegisterMethodsFragment.class.getCanonicalName())){
             finish();

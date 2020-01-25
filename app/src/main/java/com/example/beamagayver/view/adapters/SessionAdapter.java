@@ -20,113 +20,55 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.beamagayver.R;
-import com.example.beamagayver.data.FireStoreProcess;
-import com.example.beamagayver.data.onListenToFireStore;
 import com.example.beamagayver.pojo.Post;
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.MyHolder> implements onListenToFireStore {
+public class SessionAdapter extends FirestoreRecyclerAdapter<Post, SessionAdapter.MyHolder> {
 
-    private static final String TAG = "SessionsAdapter";
-    Context mContext;
-    ArrayList<Post> data;
-    onListenToFireStore listener;
+    private static final String TAG = "SessionAdapter";
+    private Context mContext;
+    private ArrayList<Post> data;
 
-    public SessionsAdapter(Context mContext, ArrayList<Post> data) {
-        this.mContext = mContext;
-        this.data = data;
+    public SessionAdapter(@NonNull FirestoreRecyclerOptions<Post> options , Context context) {
+        super(options);
+        mContext = context;
+    }
+
+    @Override
+    protected void onBindViewHolder(@NonNull MyHolder holder, int position, @NonNull Post p) {
+        try {
+//            Collections.sort(data);
+//            Collections.reverse(data);
+//                Post p = data.get(position);
+            String likes = p.getmLikes() + " likes";
+            String joined = p.getmJoined() + " joined";
+            String startDate = p.getmStartDate() + " - " + p.getmStartTime();
+            Uri photoUri = Uri.parse(p.getmOwnerImage());
+            holder.mOwnerName.setText(p.getmOwnerName());
+            holder.mPostTime.setText(p.getmPostTime());
+            holder.mPostCaption.setText(p.getmPostCaption());
+            holder.mPhoneNumber.setText(p.getmPhoneNumber());
+            holder.mDuration.setText(p.getmDuration());
+            holder.mStartDate.setText(startDate);
+            holder.likesCount.setText(likes);
+            holder.joinedCount.setText(joined);
+            holder.mCarDetails.setText(p.getmCarDetails());
+            Picasso.get().load(photoUri).into(holder.mOwnerImage);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @NonNull
     @Override
     public MyHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(mContext).inflate(R.layout.session_item, parent, false);
-        return new MyHolder(itemView);
+        return new MyHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.session_item, parent, false));
     }
-
-
-    @Override
-    public void onBindViewHolder(@NonNull MyHolder holder, int position) {
-        try {
-            if (data.size() > 0) {
-                Collections.sort(data);
-                Collections.reverse(data);
-                Post p = data.get(position);
-                String likes = p.getmLikes() + " likes";
-                String joined = p.getmJoined() + " joined";
-                String startDate = p.getmStartDate() +" - " +p.getmStartTime();
-                Uri photoUri = Uri.parse(p.getmOwnerImage());
-                holder.mOwnerName.setText(p.getmOwnerName());
-                holder.mPostTime.setText(p.getmPostTime());
-                holder.mPostCaption.setText(p.getmPostCaption());
-                holder.mPhoneNumber.setText(p.getmPhoneNumber());
-                holder.mDuration.setText(p.getmDuration());
-                holder.mStartDate.setText(startDate);
-                holder.likesCount.setText(likes);
-                holder.joinedCount.setText(joined);
-                holder.mCarDetails.setText(p.getmCarDetails());
-                Picasso.get().load(photoUri).into(holder.mOwnerImage);
-            }
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    @Override
-    public int getItemCount() {
-        return data.size();
-    }
-
-    @Override
-    public void onPostAdded(Post post) {
-        try {
-            if (post != null) {
-                if(!data.contains(post)) {
-                    data.add(post);
-                   notifyDataSetChanged();
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.i(TAG, "onPostAdded: "+ e.getMessage());
-        }
-    }
-
-    @Override
-    public void onPostModified(Post post) {
-        Log.i(TAG, "onPostModified: interface is called");
-        try {
-            if (post != null) {
-                String postID = post.getmPostID();
-                for (Post p : data) {
-                    if (postID != null && p.getmPostID().equals(postID)) {
-                        data.set(data.indexOf(p), post);
-                    }
-                }
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            Log.i(TAG, "onPostModified: " + ex.getMessage());
-        }
-        notifyDataSetChanged();
-    }
-
-    @Override
-    public void onPostDeleted(Post post) {
-        Log.i(TAG, "onPostDeleted: interface is called");
-        String id = post.getmPostID();
-        for(Post p : data){
-            if(p.getmPostID().equals(id)) data.remove(post);
-        }
-        notifyDataSetChanged();
-    }
-
 
     class MyHolder extends RecyclerView.ViewHolder implements View.OnClickListener, PopupMenu.OnMenuItemClickListener {
 
@@ -172,7 +114,7 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.MyHold
 
             if (liked) likeImage.setImageResource(R.drawable.ic_favorite_red);
             else likeImage.setImageResource(R.drawable.ic_favorite_blanck);
-            if(joined) joinedImage.setImageResource(R.drawable.ic_check_green_24dp);
+            if (joined) joinedImage.setImageResource(R.drawable.ic_check_green_24dp);
             else joinedImage.setImageResource(R.drawable.ic_check_gray_24dp);
             menu.setOnClickListener(this);
             likes.setOnClickListener(this);
@@ -206,10 +148,10 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.MyHold
                     }
                     break;
                 case R.id.join_button:
-                    if(!joined){
+                    if (!joined) {
                         joined = true;
                         joinedImage.setImageResource(R.drawable.ic_check_green_24dp);
-                    }else{
+                    } else {
                         joined = false;
                         joinedImage.setImageResource(R.drawable.ic_check_gray_24dp);
                     }
@@ -219,7 +161,7 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.MyHold
                         String number = mPhoneNumber.getText().toString();
                         if (number != null || !number.isEmpty() || number != "") {
                             Intent intent = new Intent(Intent.ACTION_CALL);
-                            intent.setData(Uri.parse("tel:"+mPhoneNumber.getText()));
+                            intent.setData(Uri.parse("tel:" + mPhoneNumber.getText()));
                             mContext.startActivity(intent);
                         } else {
                             Toast.makeText(mContext, "No Phone Number Applied", Toast.LENGTH_SHORT).show();

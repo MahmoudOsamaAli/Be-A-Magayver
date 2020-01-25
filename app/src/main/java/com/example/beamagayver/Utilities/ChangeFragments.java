@@ -9,10 +9,10 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.beamagayver.R;
 import com.example.beamagayver.view.activities.WelcomeActivity;
 
-public class Utilities {
+public class ChangeFragments {
 
     public static Fragment currFragment;
-    private static final String TAG = "Utilities";
+    private static final String TAG = "ChangeFragments";
     private final static String TAG_FRAGMENT = "TAG_FRAGMENT";
     public static final String LEFT_TO_RIGHT = "LEFT_TO_RIGHT";
     public static final String RIGHT_TO_LEFT = "RIGHT_TO_LEFT";
