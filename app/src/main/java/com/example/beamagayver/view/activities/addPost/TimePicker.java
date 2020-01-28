@@ -1,4 +1,4 @@
-package com.example.beamagayver.Utilities;
+package com.example.beamagayver.view.activities.addPost;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -12,7 +12,7 @@ import androidx.fragment.app.DialogFragment;
 
 import java.util.Calendar;
 
-public class TimePickerFragment extends DialogFragment {
+public class TimePicker extends DialogFragment {
 
     @NonNull
     @Override

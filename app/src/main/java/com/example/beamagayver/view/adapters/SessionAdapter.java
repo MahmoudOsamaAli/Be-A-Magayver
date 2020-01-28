@@ -1,9 +1,17 @@
 package com.example.beamagayver.view.adapters;
 
+import android.Manifest;
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -11,56 +19,177 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.beamagayver.R;
+import com.example.beamagayver.Utilities.NumberUtils;
+import com.example.beamagayver.data.FireStoreProcess;
+import com.example.beamagayver.data.PrefManager;
+import com.example.beamagayver.pojo.JoinedModel;
+import com.example.beamagayver.pojo.LikesModel;
 import com.example.beamagayver.pojo.Post;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Objects;
 
 public class SessionAdapter extends FirestoreRecyclerAdapter<Post, SessionAdapter.MyHolder> {
 
     private static final String TAG = "SessionAdapter";
+    private static final int LOCATION_REQUEST_CODE = 1;
+    private double sessionLON;
+    private double sessionLAT;
     private Context mContext;
-    private ArrayList<Post> data;
+    private Activity mActivity;
+    private Location mCurrentLocation;
+    private String userID;
+    private final LocationListener locationListener = new LocationListener() {
 
-    public SessionAdapter(@NonNull FirestoreRecyclerOptions<Post> options , Context context) {
+        @Override
+        public void onLocationChanged(Location location) {
+            double lon = location.getLongitude();
+            double lat = location.getLatitude();
+            mCurrentLocation = location;
+            Log.i(TAG, "onLocationChanged: lon " + lon + " ,lat " + lat);
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public void onStatusChanged(String s, int i, Bundle bundle) {
+        }
+
+        @Override
+        public void onProviderEnabled(String s) {
+        }
+
+        @Override
+        public void onProviderDisabled(String s) {
+            new AlertDialog.Builder(mContext)
+                    .setMessage("Open GPS to calculate how are sessions far away from you")
+                    .setPositiveButton("Ok", (dialogInterface, i) -> dialogInterface.dismiss())
+                    .create().show();
+        }
+    };
+
+
+    public SessionAdapter(@NonNull FirestoreRecyclerOptions<Post> options, Context context, Activity activity) {
         super(options);
         mContext = context;
+        mActivity = activity;
+        PrefManager prefManager = new PrefManager(context);
+        userID = prefManager.readString(mContext.getResources().getString(R.string.account_id));
+        initLocation();
     }
 
     @Override
     protected void onBindViewHolder(@NonNull MyHolder holder, int position, @NonNull Post p) {
         try {
-//            Collections.sort(data);
-//            Collections.reverse(data);
-//                Post p = data.get(position);
-            String likes = p.getmLikes() + " likes";
-            String joined = p.getmJoined() + " joined";
+            holder.currPost = p;
             String startDate = p.getmStartDate() + " - " + p.getmStartTime();
             Uri photoUri = Uri.parse(p.getmOwnerImage());
+            sessionLAT = p.getmLocation().getLatitude();
+            sessionLON = p.getmLocation().getLongitude();
+            if (mCurrentLocation != null) {
+                double distance = NumberUtils.distance(sessionLAT, sessionLON , mCurrentLocation);
+                String dis = distance + " Kilometers away from you";
+                holder.postDist.setVisibility(View.VISIBLE);
+                holder.postDist.setText(dis);
+                holder.progressBar.setVisibility(View.GONE);
+            } else {
+                holder.progressBar.setVisibility(View.GONE);
+                holder.postDist.setVisibility(View.VISIBLE);
+                holder.postDist.setText(mContext.getResources().getString(R.string.get_my_location));
+            }
             holder.mOwnerName.setText(p.getmOwnerName());
             holder.mPostTime.setText(p.getmPostTime());
+            holder.cost.setText(p.getmPrice());
             holder.mPostCaption.setText(p.getmPostCaption());
             holder.mPhoneNumber.setText(p.getmPhoneNumber());
             holder.mDuration.setText(p.getmDuration());
             holder.mStartDate.setText(startDate);
-            holder.likesCount.setText(likes);
-            holder.joinedCount.setText(joined);
             holder.mCarDetails.setText(p.getmCarDetails());
             Picasso.get().load(photoUri).into(holder.mOwnerImage);
+            // set like join
+            LikesModel likesModel = p.getmLikes();
+            JoinedModel joinedModel = p.getmJoined();
+            String likes = likesModel.getNumber() + " likes";
+            String joined = joinedModel.getNumber() + " joined";
+            setLikes(likesModel.getUsers().contains(userID), holder);
+            setJoined(joinedModel.getUsers().contains(userID), holder);
+            holder.likesCount.setText(likes);
+            holder.joinedCount.setText(joined);
         } catch (Exception e) {
             e.printStackTrace();
+            Log.i(TAG, "onBindViewHolder: " + e.getMessage());
+        }
+    }
+
+    private void setLikes(boolean liked, MyHolder holder) {
+        try {
+            holder.liked = liked;
+            if (liked) {
+                Log.i(TAG, "setLikes: liked = " + true);
+                holder.likeImage.setImageResource(R.drawable.ic_favorite_red);
+                holder.likesCount.setTextColor(mContext.getResources().getColor(R.color.red));
+            } else {
+                Log.i(TAG, "setLikes: liked = " + false);
+                holder.likeImage.setImageResource(R.drawable.ic_favorite_blanck);
+                holder.likesCount.setTextColor(mContext.getResources().getColor(R.color.gray_dark));
+            }
+
+
+        } catch (Resources.NotFoundException e) {
+            e.printStackTrace();
+            Log.i(TAG, "setLikes: " + e.getMessage());
+        }
+    }
+
+    private void setJoined(boolean joined, MyHolder holder) {
+        holder.joined = joined;
+        if (joined) {
+            Log.i(TAG, "setLikes: joined " + true);
+            holder.joinedImage.setImageResource(R.drawable.ic_check_green_24dp);
+            holder.joinedCount.setTextColor(mContext.getResources().getColor(R.color.green));
+        } else {
+            Log.i(TAG, "setLikes: joined " + false);
+            holder.joinedImage.setImageResource(R.drawable.ic_check_gray_24dp);
+            holder.joinedCount.setTextColor(mContext.getResources().getColor(R.color.gray_dark));
+        }
+    }
+
+    private void initLocation() {
+        try {
+            if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(mContext)
+                    , Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    || ActivityCompat.checkSelfPermission(mContext
+                    , Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(mActivity
+                        , new String[]{Manifest.permission.ACCESS_COARSE_LOCATION
+                                , Manifest.permission.ACCESS_FINE_LOCATION}
+                        , LOCATION_REQUEST_CODE);
+                Log.i(TAG, "initLocation: no permission to get location");
+            } else {
+                Log.i(TAG, "initLocation: called");
+                LocationManager lm = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+                if (lm != null) {
+                    lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10,
+                            locationListener);
+                    mCurrentLocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.i(TAG, "initLocation: catched an exception" + e.getMessage());
         }
     }
 
@@ -74,6 +203,7 @@ public class SessionAdapter extends FirestoreRecyclerAdapter<Post, SessionAdapte
 
         boolean liked;
         boolean joined;
+        Post currPost;
         ImageView mOwnerImage;
         TextView mOwnerName;
         TextView mPostTime;
@@ -90,11 +220,13 @@ public class SessionAdapter extends FirestoreRecyclerAdapter<Post, SessionAdapte
         TextView mPhoneNumber;
         TextView mDuration;
         TextView mStartDate;
+        TextView postDist;
+        LinearLayout distLayout;
+        ProgressBar progressBar;
+        TextView cost;
 
         MyHolder(@NonNull View itemView) {
             super(itemView);
-            liked = false;
-            joined = false;
             mOwnerImage = itemView.findViewById(R.id.post_owner_imaage);
             mOwnerName = itemView.findViewById(R.id.post_owner_name_tv);
             mCarDetails = itemView.findViewById(R.id.post_car_details);
@@ -111,15 +243,17 @@ public class SessionAdapter extends FirestoreRecyclerAdapter<Post, SessionAdapte
             call = itemView.findViewById(R.id.call_button);
             join = itemView.findViewById(R.id.join_button);
             likeImage = itemView.findViewById(R.id.like_image);
-
-            if (liked) likeImage.setImageResource(R.drawable.ic_favorite_red);
-            else likeImage.setImageResource(R.drawable.ic_favorite_blanck);
-            if (joined) joinedImage.setImageResource(R.drawable.ic_check_green_24dp);
-            else joinedImage.setImageResource(R.drawable.ic_check_gray_24dp);
+            postDist = itemView.findViewById(R.id.post_distance);
+            distLayout = itemView.findViewById(R.id.distance_layout);
+            progressBar = itemView.findViewById(R.id.get_location_progress);
+            progressBar.setVisibility(View.GONE);
+            cost = itemView.findViewById(R.id.cost_tv);
             menu.setOnClickListener(this);
             likes.setOnClickListener(this);
             call.setOnClickListener(this);
             join.setOnClickListener(this);
+            distLayout.setOnClickListener(this);
+
         }
 
         @Override
@@ -134,42 +268,80 @@ public class SessionAdapter extends FirestoreRecyclerAdapter<Post, SessionAdapte
                     popup.setOnMenuItemClickListener(this);
                     break;
                 case R.id.like_button:
-                    try {
-                        if (!liked) {
-                            liked = true;
-                            likeImage.setImageResource(R.drawable.ic_favorite_red);
-                        } else {
-                            liked = false;
-                            likeImage.setImageResource(R.drawable.ic_favorite_blanck);
-                        }
-
-                    } catch (Resources.NotFoundException e) {
-                        e.printStackTrace();
-                    }
+                    performLiked();
                     break;
                 case R.id.join_button:
-                    if (!joined) {
-                        joined = true;
-                        joinedImage.setImageResource(R.drawable.ic_check_green_24dp);
-                    } else {
-                        joined = false;
-                        joinedImage.setImageResource(R.drawable.ic_check_gray_24dp);
-                    }
+                    performJoined();
                     break;
                 case R.id.call_button:
-                    try {
-                        String number = mPhoneNumber.getText().toString();
-                        if (number != null || !number.isEmpty() || number != "") {
-                            Intent intent = new Intent(Intent.ACTION_CALL);
-                            intent.setData(Uri.parse("tel:" + mPhoneNumber.getText()));
-                            mContext.startActivity(intent);
-                        } else {
-                            Toast.makeText(mContext, "No Phone Number Applied", Toast.LENGTH_SHORT).show();
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Log.i(TAG, "onClick: " + e.getMessage());
+                    callInstructor();
+                    break;
+                case R.id.distance_layout:
+                    if (mCurrentLocation != null) {
+                        launchGoogleMaps(mContext, sessionLAT, sessionLON);
+                    } else {
+                        postDist.setVisibility(View.GONE);
+                        progressBar.setVisibility(View.VISIBLE);
+                        initLocation();
                     }
+                    break;
+            }
+        }
+
+        private void callInstructor() {
+            try {
+                String number = mPhoneNumber.getText().toString();
+                if (!number.equals("")) {
+                    Intent intent = new Intent(Intent.ACTION_CALL);
+                    intent.setData(Uri.parse("tel:" + mPhoneNumber.getText()));
+                    mContext.startActivity(intent);
+                } else {
+                    Toast.makeText(mContext, "No Phone Number Applied", Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.i(TAG, "onClick: " + e.getMessage());
+            }
+        }
+
+        private void performJoined() {
+            String postID = currPost.getmPostID();
+            if (!joined) {
+                joined = true;
+                Log.i(TAG, "onClick: joined");
+                FireStoreProcess.updatePostLikesJoined(postID, "mJoined", 1, userID);
+            } else {
+                joined = false;
+                Log.i(TAG, "onClick: not joined");
+                FireStoreProcess.updatePostLikesJoined(postID, "mJoined", -1, userID);
+            }
+
+        }
+
+        private void performLiked() {
+
+            String postID = currPost.getmPostID();
+            if (!liked) {
+                liked = true;
+                Log.i(TAG, "onClick: liked");
+                FireStoreProcess.updatePostLikesJoined(postID, "mLikes", 1, userID);
+            } else {
+                liked = false;
+                Log.i(TAG, "onClick: not liked");
+                FireStoreProcess.updatePostLikesJoined(postID, "mLikes", -1, userID);
+            }
+        }
+
+        private void launchGoogleMaps(Context context, double latitude, double longitude) {
+            try {
+                String format = "geo:0,0?q=" + latitude + "," + longitude + "(" + "Session location" + ")";
+                Uri uri = Uri.parse(format);
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                context.startActivity(intent);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.i(TAG, "launchGoogleMaps: " + e.getMessage());
             }
         }
 

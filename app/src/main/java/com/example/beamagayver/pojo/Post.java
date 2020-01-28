@@ -12,8 +12,9 @@ public class Post implements Comparable<Post> {
     private String mDuration;
     private String mStartDate;
     private String mStartTime;
-    private int mJoined;
-    private int mLikes;
+    private JoinedModel mJoined;
+    private LikesModel mLikes;
+    private String mPrice;
     private String mPhoneNumber;
     private LocationModel mLocation;
 
@@ -23,7 +24,8 @@ public class Post implements Comparable<Post> {
 
     public Post(String name, String OwnerID, String ownerImage, String postTime
             , String caption, String carDetails, String duration, String startDate
-            , String startTime, int joined, int likes, String phoneNumber, LocationModel location) {
+            , String startTime, JoinedModel joined, LikesModel likes, String phoneNumber
+            , LocationModel location , String price) {
 
         this.mOwnerName = name;
         this.mOwnerImage = ownerImage;
@@ -38,6 +40,15 @@ public class Post implements Comparable<Post> {
         this.mLikes = likes;
         this.mPhoneNumber = phoneNumber;
         this.mLocation = location;
+        this.mPrice = price;
+    }
+
+    public String getmPrice() {
+        return mPrice;
+    }
+
+    public void setmPrice(String mPrice) {
+        this.mPrice = mPrice;
     }
 
     public LocationModel getmLocation() {
@@ -48,19 +59,19 @@ public class Post implements Comparable<Post> {
         this.mLocation = mLocation;
     }
 
-    public int getmJoined() {
+    public JoinedModel getmJoined() {
         return mJoined;
     }
 
-    public void setmJoined(int mJoined) {
+    public void setmJoined(JoinedModel mJoined) {
         this.mJoined = mJoined;
     }
 
-    public int getmLikes() {
+    public LikesModel getmLikes() {
         return mLikes;
     }
 
-    public void setmLikes(int mLikes) {
+    public void setmLikes(LikesModel mLikes) {
         this.mLikes = mLikes;
     }
 

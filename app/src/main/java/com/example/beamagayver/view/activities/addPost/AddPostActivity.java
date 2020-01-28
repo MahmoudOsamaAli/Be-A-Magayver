@@ -1,4 +1,4 @@
-package com.example.beamagayver.view.activities;
+package com.example.beamagayver.view.activities.addPost;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -9,9 +9,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.DatePicker;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
@@ -20,18 +19,16 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.beamagayver.R;
-import com.example.beamagayver.Utilities.DatePickerFragment;
-import com.example.beamagayver.Utilities.Dialog;
-import com.example.beamagayver.Utilities.MapSheet;
-import com.example.beamagayver.Utilities.TimePickerFragment;
 import com.example.beamagayver.data.FireStoreProcess;
+import com.example.beamagayver.data.PrefManager;
+import com.example.beamagayver.pojo.JoinedModel;
+import com.example.beamagayver.pojo.LikesModel;
 import com.example.beamagayver.pojo.LocationModel;
 import com.example.beamagayver.pojo.Post;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
 
@@ -41,9 +38,21 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class AddPostActivity extends AppCompatActivity implements View.OnClickListener
         , TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener
-        , Dialog.DialogListener, MapSheet.onGetLocation {
+        , DialogListener {
     private static final String TAG = "AddPostActivity";
-    FirebaseUser user;
+    @BindView(R.id.delete_car_details)
+    ImageView deleteCarDetails;
+    @BindView(R.id.delete_duration)
+    ImageView deleteDuration;
+    @BindView(R.id.delete_start_date)
+    ImageView deleteStartDate;
+    @BindView(R.id.delete_start_time)
+    ImageView deleteStartTime;
+    @BindView(R.id.delete_phone_number)
+    ImageView deletePhoneNumber;
+    @BindView(R.id.delete_price)
+    ImageView deletePrice;
+    private PrefManager manager;
     @BindView(R.id.start_time_label)
     TextView startTimeLabel;
     @BindView(R.id.start_date_label)
@@ -77,7 +86,12 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
     @BindView(R.id.locations_icon)
     ConstraintLayout locationIcon;
     LocationModel locationModel;
-
+    @BindView(R.id.price_label)
+    TextView priceLabel;
+    @BindView(R.id.price_tv)
+    TextView priceTv;
+    @BindView(R.id.delete_location_ic)
+    ImageView deleteLocationIcon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,9 +103,18 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
 
     private void init() {
         try {
-            user = FirebaseAuth.getInstance().getCurrentUser();
+            manager = new PrefManager(this);
             actionBarConfig();
             setUserInfo();
+            postCaption.setOnClickListener(this);
+            deleteCarDetails.setOnClickListener(this);
+            deleteDuration.setOnClickListener(this);
+            deleteStartDate.setOnClickListener(this);
+            deleteStartTime.setOnClickListener(this);
+            deletePhoneNumber.setOnClickListener(this);
+            deletePrice.setOnClickListener(this);
+            deleteLocationIcon.setOnClickListener(this);
+            priceLabel.setOnClickListener(this);
             durationLabel.setOnClickListener(this);
             startTimeLabel.setOnClickListener(this);
             startDateLabel.setOnClickListener(this);
@@ -104,14 +127,14 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void setUserInfo() {
-        postOwnerNameTv.setText(user.getDisplayName());
-        Picasso.get().load(user.getPhotoUrl()).into(postOwnerImage);
+        postOwnerNameTv.setText(manager.readString(getResources().getString(R.string.account_name)));
+        Picasso.get().load(manager.readString(getResources().getString(R.string.account_photo))).into(postOwnerImage);
     }
 
     private void actionBarConfig() {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_close_black_24dp);
             actionBar.setTitle(getResources().getString(R.string.create_session));
         }
     }
@@ -137,9 +160,10 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
 
     private void createPost() {
         try {
-            if (user != null && checkViews()) {
-                String ownerName = user.getDisplayName();
-                String ownerImage = Objects.requireNonNull(user.getPhotoUrl()).toString();
+            if (checkViews()) {
+                String id = manager.readString(getResources().getString(R.string.account_id));
+                String ownerName = manager.readString(getResources().getString(R.string.account_name));
+                String ownerImage = manager.readString(getResources().getString(R.string.account_photo));
                 String postTime = DateFormat.format("dd/MM/yyyy hh:mm a", new Date()).toString();
                 Log.i(TAG, "createPost: post time" + postTime);
                 String caption = Objects.requireNonNull(postCaption.getText()).toString();
@@ -147,11 +171,13 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                 String duration = sessionDurationTV.getText().toString();
                 String startDate = startDateTV.getText().toString();
                 String startTime = startTimeTV.getText().toString();
-                String id = user.getUid();
                 String number = phoneNumber.getText().toString();
+                String price = priceTv.getText().toString();
+                LikesModel likes = new LikesModel(0 , new ArrayList<>());
+                JoinedModel joined = new JoinedModel(0 , new ArrayList<>());
                 Post post = new Post(ownerName, id, ownerImage, postTime, caption, carDetails, duration
-                        , startDate, startTime, 0, 0, number, locationModel);
-                FireStoreProcess.addPostToUser(user, post);
+                        , startDate, startTime, joined, likes, number, locationModel, price);
+                FireStoreProcess.addPostToUser(post);
                 Log.i(TAG, "createPost: successfully");
                 Toast.makeText(this, "Session has been added Successfully", Toast.LENGTH_SHORT).show();
                 finish();
@@ -178,11 +204,15 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
         } else if (phoneNumber.getText().toString().isEmpty()) {
             phoneNumberLabel.setError("Required");
             return false;
-        } else if (locationTV.getText().toString().isEmpty()) {
+        } else if (locationTV.getText().toString().isEmpty() || locationModel == null) {
+            Log.i(TAG, "checkViews: location model is null");
             addLocationLabel.setError("Required");
             return false;
         } else if (Objects.requireNonNull(postCaption.getText()).toString().isEmpty()) {
             postCaption.setError("Required");
+            return false;
+        } else if (Objects.requireNonNull(priceTv.getText()).toString().isEmpty()) {
+            priceLabel.setError("Required");
             return false;
         }
         return true;
@@ -190,64 +220,106 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public void onClick(View view) {
-        Dialog dialog;
+        CustomDialog dialog;
         switch (view.getId()) {
             case R.id.start_time_label:
                 Log.i(TAG, "onClick: time picker");
-                DialogFragment timePicker = new TimePickerFragment();
-                timePicker.show(getSupportFragmentManager(), "Time Picker");
+                DialogFragment timePicker = new TimePicker();
+                timePicker.show(getSupportFragmentManager(), timePicker.getTag());
                 break;
             case R.id.start_date_label:
                 Log.i(TAG, "onClick: date picker");
-                DialogFragment datePicker = new DatePickerFragment();
-                datePicker.show(getSupportFragmentManager(), "Date Picker");
+                DialogFragment datePicker = new DatePicker();
+                datePicker.show(getSupportFragmentManager(), datePicker.getTag());
                 break;
             case R.id.car_details_button:
-                dialog = new Dialog("Car Details");
-                dialog.show(getSupportFragmentManager(), "Car Details");
+                dialog = new CustomDialog("Car Details");
+                dialog.show(getSupportFragmentManager(), dialog.getTag());
                 break;
             case R.id.phone_number_label:
-                dialog = new Dialog("Phone Number");
-                dialog.show(getSupportFragmentManager(), "Phone Number");
+                dialog = new CustomDialog("Phone Number");
+                dialog.show(getSupportFragmentManager(), dialog.getTag());
                 break;
             case R.id.add_location_label:
-                MapSheet map = new MapSheet();
+                MapBottomSheet map = new MapBottomSheet();
                 map.show(getSupportFragmentManager(), map.getTag());
                 break;
             case R.id.session_duration_label:
-                dialog = new Dialog("Session Duration");
-                dialog.show(getSupportFragmentManager(), "Session Duration");
+                dialog = new CustomDialog("Session Duration");
+                dialog.show(getSupportFragmentManager(), dialog.getTag());
                 break;
+            case R.id.price_label:
+                dialog = new CustomDialog("price");
+                dialog.show(getSupportFragmentManager(), dialog.getTag());
+                break;
+            case R.id.delete_location_ic:
+                locationTV.setText("");
+                locationModel = null;
+                locationIcon.setVisibility(View.GONE);
+                break;
+            case R.id.delete_car_details :
+                carDetailsTV.setText("");
+                carDetailsTV.setVisibility(View.GONE);
+                deleteCarDetails.setVisibility(View.GONE);
+                break;
+            case R.id.delete_duration:
+                sessionDurationTV.setText("");
+                sessionDurationTV.setVisibility(View.GONE);
+                deleteDuration.setVisibility(View.GONE);
+                break;
+            case R.id.delete_start_date :
+                startDateTV.setText("");
+                startDateTV.setVisibility(View.GONE);
+                deleteStartDate.setVisibility(View.GONE);
+                break;
+            case R.id.delete_start_time :
+                startTimeTV.setText("");
+                startTimeTV.setVisibility(View.GONE);
+                deleteStartTime.setVisibility(View.GONE);
+                break;
+            case R.id.delete_phone_number :
+                phoneNumber.setText("");
+                phoneNumber.setVisibility(View.GONE);
+                deletePhoneNumber.setVisibility(View.GONE);
+                break;
+            case R.id.delete_price :
+                priceTv.setText("");
+                priceTv.setVisibility(View.GONE);
+                deletePrice.setVisibility(View.GONE);
+                break;
+            case R.id.post_edit_text :
+                postCaption.setFocusableInTouchMode(true);
         }
     }
 
     @Override
-    public void onTimeSet(TimePicker timePicker, int hour, int min) {
+    public void onTimeSet(android.widget.TimePicker timePicker, int hour, int min) {
         String time = hour + ":" + min;
         startTimeTV.setVisibility(View.VISIBLE);
         startTimeTV.setText(time);
+        deleteStartTime.setVisibility(View.VISIBLE);
     }
 
     @Override
-    public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+    public void onDateSet(android.widget.DatePicker datePicker, int year, int month, int day) {
         String date = day + " / " + (month + 1) + " / " + year;
         startDateTV.setVisibility(View.VISIBLE);
         startDateTV.setText(date);
+        deleteStartDate.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void applyCarDetails(String text) {
-        if (text.isEmpty()) carDetailsLabel.setError("Required");
-        else {
-            carDetailsTV.setVisibility(View.VISIBLE);
-            carDetailsTV.setText(text);
-        }
+        carDetailsTV.setVisibility(View.VISIBLE);
+        carDetailsTV.setText(text);
+        deleteCarDetails.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void applyPhoneNumber(String number) {
         phoneNumber.setVisibility(View.VISIBLE);
         phoneNumber.setText(number);
+        deletePhoneNumber.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -255,6 +327,15 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
         String text = duration + " hours";
         sessionDurationTV.setText(text);
         sessionDurationTV.setVisibility(View.VISIBLE);
+        deleteDuration.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void applyPriceText(String price) {
+        String p = price + " EGP";
+        priceTv.setText(p);
+        priceTv.setVisibility(View.VISIBLE);
+        deletePrice.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -267,4 +348,5 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
         locationTV.setText(address);
         locationIcon.setVisibility(View.VISIBLE);
     }
+
 }

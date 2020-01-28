@@ -1,5 +1,6 @@
 package com.example.beamagayver.view.activities;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 
@@ -12,11 +13,15 @@ import com.example.beamagayver.view.fragments.ActivitiesFragment;
 import com.example.beamagayver.view.fragments.SessionsFragment;
 import com.example.beamagayver.view.fragments.ProfileFragment;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
+public class HomeActivity extends AppCompatActivity  {
 
 
     @BindView(R.id.view_pager)
@@ -41,9 +46,5 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-    @Override
-    public void onClick(View view) {
-
     }
 }

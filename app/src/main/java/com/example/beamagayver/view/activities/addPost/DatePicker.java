@@ -1,4 +1,4 @@
-package com.example.beamagayver.Utilities;
+package com.example.beamagayver.view.activities.addPost;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -11,7 +11,7 @@ import androidx.fragment.app.DialogFragment;
 
 import java.util.Calendar;
 
-public class DatePickerFragment extends DialogFragment {
+public class DatePicker extends DialogFragment {
 
     @NonNull
     @Override

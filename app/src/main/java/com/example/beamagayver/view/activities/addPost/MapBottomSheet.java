@@ -1,4 +1,4 @@
-package com.example.beamagayver.Utilities;
+package com.example.beamagayver.view.activities.addPost;
 
 import android.Manifest;
 import android.app.Activity;
@@ -6,6 +6,8 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -13,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -23,21 +26,18 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.beamagayver.R;
 import com.example.beamagayver.pojo.LocationModel;
-import com.example.beamagayver.view.activities.AddPostActivity;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -52,20 +52,18 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MapSheet extends BottomSheetDialogFragment implements OnMapReadyCallback
+public class MapBottomSheet extends BottomSheetDialogFragment implements OnMapReadyCallback
         , GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMapClickListener
-        , View.OnClickListener  , AdapterView.OnItemSelectedListener {
+        , View.OnClickListener, AdapterView.OnItemSelectedListener , View.OnFocusChangeListener {
 
-    private static final String TAG = "MapSheet";
-    private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
-    private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
+    private static final String TAG = "MapBottomSheet";
     private static final int REQUEST_LOCATION_CODE = 99;
     private static final float DEFAULT_ZOOM = 15f;
-    private boolean mLocationPermissionsGranted;
     private GoogleMap mMap;
     private LatLng currLocation;
-    private onGetLocation listener;
+    private DialogListener listener;
     private Activity mContext;
+    private Marker marker;
     @BindView(R.id.get_location)
     Button getLocationButton;
     @BindView(R.id.icon_close)
@@ -77,7 +75,32 @@ public class MapSheet extends BottomSheetDialogFragment implements OnMapReadyCal
     @BindView(R.id.map_activity_street_edit_text)
     TextInputEditText streetEditText;
     private String selectedCountry;
-    private LocationModel locationModel;
+    private final LocationListener locationListener = new LocationListener() {
+
+        @Override
+        public void onLocationChanged(Location location) {
+            currLocation = new LatLng(location.getLatitude(), location.getLongitude());
+            Log.i(TAG, "onLocationChanged: lon " + location.getLatitude() + " ,lat " + location.getLongitude());
+        }
+
+        @Override
+        public void onStatusChanged(String s, int i, Bundle bundle) {
+        }
+
+        @Override
+        public void onProviderEnabled(String s) {
+        }
+
+        @Override
+        public void onProviderDisabled(String s) {
+            new AlertDialog.Builder(mContext)
+                    .setMessage("Open GPS to calculate how are sessions far away from you")
+                    .setPositiveButton("Ok", (dialogInterface, i) -> {
+                        dialogInterface.dismiss();
+                    })
+                    .create().show();
+        }
+    };
 
 
     @NotNull
@@ -135,7 +158,7 @@ public class MapSheet extends BottomSheetDialogFragment implements OnMapReadyCal
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         mContext = (AddPostActivity) context;
-        listener = (onGetLocation) mContext;
+        listener = (DialogListener) mContext;
     }
 
     private boolean isServiceSDK() {
@@ -155,34 +178,15 @@ public class MapSheet extends BottomSheetDialogFragment implements OnMapReadyCal
 
     private void init() {
         Log.i(TAG, "init: ");
+        cityEditText.setOnFocusChangeListener(this);
+        streetEditText.setOnFocusChangeListener(this);
         closeButton.setOnClickListener(this);
         getLocationButton.setOnClickListener(this);
         countriesSpinner.setOnItemSelectedListener(this);
-        getLocationPermissions();
+        getDeviceLocation();
+        initMap();
     }
 
-    private void getLocationPermissions() {
-        Log.d(TAG, "getLocationPermission: getting location permissions");
-        String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION};
-
-        if (ContextCompat.checkSelfPermission(mContext.getApplicationContext(),
-                FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            if (ContextCompat.checkSelfPermission(mContext.getApplicationContext(),
-                    COURSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                mLocationPermissionsGranted = true;
-                initMap();
-            } else {
-                ActivityCompat.requestPermissions(Objects.requireNonNull(getActivity()),
-                        permissions,
-                        REQUEST_LOCATION_CODE);
-            }
-        } else {
-            ActivityCompat.requestPermissions(Objects.requireNonNull(getActivity()),
-                    permissions,
-                    REQUEST_LOCATION_CODE);
-        }
-    }
 
     private void initMap() {
         Log.i(TAG, "initMap: ");
@@ -190,43 +194,31 @@ public class MapSheet extends BottomSheetDialogFragment implements OnMapReadyCal
         FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
         fragmentTransaction.add(R.id.map, mapFragment);
         fragmentTransaction.commit();
-        getDeviceLocation();
         mapFragment.getMapAsync(this);
-
     }
 
     private void getDeviceLocation() {
-        Log.i(TAG, "getDeviceLocation: getting the devices current location");
-        FusedLocationProviderClient mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mContext);
         try {
-            if (mLocationPermissionsGranted) {
-                LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
-                if (locationManager != null) {
-                    boolean b = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
-                            LocationManager.NETWORK_PROVIDER);
-                    if (b) {
-                        Log.i(TAG, "getDeviceLocation: b = " + b);
-                        mFusedLocationProviderClient.getLastLocation().addOnSuccessListener(location -> {
-                            if (location != null) {
-                                currLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                                Log.i(TAG, "getDeviceLocation: long " + location.getLongitude() + " lat " + location.getLatitude());
-                            } else {
-                                Log.i(TAG, "getDeviceLocation: location is null");
-                            }
-                        }).addOnCompleteListener(task -> {
-                            Log.i(TAG, "getDeviceLocation: location has completed");
-                        });
-                    } else {
-                        new AlertDialog.Builder(mContext)
-                                .setTitle("Enable GPS : Error getting your location")
-                                .setPositiveButton("Ok", null)
-                                .show();
-                        Log.i(TAG, "getDeviceLocation: b = " + b);
-                    }
+            if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(mContext)
+                    , Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    || ActivityCompat.checkSelfPermission(mContext
+                    , Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(Objects.requireNonNull(getActivity())
+                        , new String[]{Manifest.permission.ACCESS_COARSE_LOCATION
+                                , Manifest.permission.ACCESS_FINE_LOCATION}
+                        , REQUEST_LOCATION_CODE);
+                Log.i(TAG, "getDeviceLocation: no permission to get location");
+            } else {
+                Log.i(TAG, "getDeviceLocation: called");
+                LocationManager lm = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+                if (lm != null) {
+                    lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10,
+                            locationListener);
                 }
             }
-        } catch (SecurityException e) {
-            Log.i(TAG, "getDeviceLocation: SecurityException: " + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.i(TAG, "getDeviceLocation: catched an exception" + e.getMessage());
         }
     }
 
@@ -253,11 +245,12 @@ public class MapSheet extends BottomSheetDialogFragment implements OnMapReadyCal
     @Override
     public void onClick(View view) {
         if (view.equals(getLocationButton)) {
-            if (currLocation != null &&! selectedCountry.isEmpty() &&
-                    !streetEditText.getText().toString().isEmpty() && !cityEditText.getText().toString().isEmpty()) {
+            if (currLocation != null && !selectedCountry.isEmpty() &&
+                    !Objects.requireNonNull(streetEditText.getText()).toString().isEmpty() &&
+                    !Objects.requireNonNull(cityEditText.getText()).toString().isEmpty()) {
                 Log.i(TAG, "onClick: currLocation not null");
-                locationModel = new LocationModel(selectedCountry , cityEditText.getText().toString() ,
-                        streetEditText.getText().toString() , currLocation.longitude , currLocation.latitude);
+                LocationModel locationModel = new LocationModel(selectedCountry, cityEditText.getText().toString(),
+                        streetEditText.getText().toString(), currLocation.longitude, currLocation.latitude);
                 listener.onGetLocationListener(locationModel);
                 dismiss();
             } else {
@@ -274,15 +267,21 @@ public class MapSheet extends BottomSheetDialogFragment implements OnMapReadyCal
 
     @Override
     public void onMapClick(LatLng latLng) {
-        mMap.clear();
-        mMap.addMarker(new MarkerOptions().position(latLng).title("X = " + latLng.latitude + " Y = " + latLng.longitude));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM));
+        if (marker != null) {
+            marker.remove();
+        }
+        currLocation = latLng;
+        marker = mMap.addMarker(new MarkerOptions()
+                .title("X = " + latLng.latitude + " Y = " + latLng.longitude)
+                .position(currLocation).draggable(true).visible(true));
     }
 
     @Override
     public boolean onMyLocationButtonClick() {
-        mMap.clear();
-        getLocationPermissions();
+        getDeviceLocation();
+        if (currLocation != null) {
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currLocation, DEFAULT_ZOOM));
+        }
         return true;
     }
 
@@ -293,26 +292,33 @@ public class MapSheet extends BottomSheetDialogFragment implements OnMapReadyCal
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
         mMap.setOnMyLocationButtonClickListener(this);
         mMap.setOnMapClickListener(this);
-        if (mLocationPermissionsGranted) {
-            if (currLocation != null) {
-                Log.i(TAG, "onMapReady: current location is not null");
-                mMap.addMarker(new MarkerOptions().position(currLocation));
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currLocation, DEFAULT_ZOOM));
-            }
+        if (currLocation != null) {
+            Log.i(TAG, "onMapReady: current location is not null");
+            marker = mMap.addMarker(new MarkerOptions().position(currLocation));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currLocation, DEFAULT_ZOOM));
         }
+
     }
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        //spinner
         selectedCountry = adapterView.getItemAtPosition(i).toString();
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
-
+        // spinner
     }
 
-    public interface onGetLocation {
-        void onGetLocationListener(LocationModel model);
+    @Override
+    public void onFocusChange(View view, boolean focused) {
+        InputMethodManager keyboard = (InputMethodManager) Objects.requireNonNull(getActivity()).getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (focused && keyboard != null)
+            keyboard.showSoftInput(view, 0);
+        else if (keyboard != null) {
+            keyboard.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
+
 }

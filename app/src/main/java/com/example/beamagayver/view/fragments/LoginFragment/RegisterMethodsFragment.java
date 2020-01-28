@@ -1,6 +1,7 @@
 package com.example.beamagayver.view.fragments.LoginFragment;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,8 +21,10 @@ import androidx.fragment.app.Fragment;
 
 import com.example.beamagayver.R;
 import com.example.beamagayver.data.FireStoreProcess;
+import com.example.beamagayver.data.PrefManager;
 import com.example.beamagayver.pojo.User;
 import com.example.beamagayver.view.activities.HomeActivity;
+import com.example.beamagayver.view.activities.WelcomeActivity;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -37,8 +40,6 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.shobhitpuri.custombuttons.GoogleSignInButton;
-import com.facebook.FacebookSdk;
-import com.facebook.appevents.AppEventsLogger;
 
 
 import java.util.Arrays;
@@ -46,8 +47,6 @@ import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class RegisterMethodsFragment extends Fragment implements View.OnClickListener, LoginView.onRegistrationListener, LoginView.onStartActivityForResult {
 
@@ -86,16 +85,12 @@ public class RegisterMethodsFragment extends Fragment implements View.OnClickLis
     private FirebaseAuth mAuth;
     private Context mContext;
     private LoginPresenter presenter;
-    CallbackManager mCallbackManager;
-
-    Handler handler = new Handler();
-    Runnable runnableLogIn = new Runnable() {
+    private CallbackManager mCallbackManager;
+    private PrefManager mPrefManager;
+    private Handler handler = new Handler();
+    private Runnable runnableLogIn = new Runnable() {
         @Override
         public void run() {
-            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-            if (currentUser != null) {
-                updateUI(currentUser);
-            }
             methods.setVisibility(View.VISIBLE);
         }
     };
@@ -110,14 +105,15 @@ public class RegisterMethodsFragment extends Fragment implements View.OnClickLis
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
-        init();
+        if (!checkForCurrentUser()) init();
     }
 
     private void init() {
         try {
+            presenter = new LoginPresenter(mContext, this, this, mAuth);
+            mPrefManager = new PrefManager(mContext);
             mCallbackManager = CallbackManager.Factory.create();
-            methods.setVisibility(View.GONE);
-            handler.postDelayed(runnableLogIn, 2500);
+            methods.setVisibility(View.VISIBLE);
             instructorButton.setOnClickListener(this);
             newClientButton.setOnClickListener(this);
             googleForInstructor.setOnClickListener(this);
@@ -126,13 +122,20 @@ public class RegisterMethodsFragment extends Fragment implements View.OnClickLis
             fbForUser.setOnClickListener(this);
             twitterForInstructor.setOnClickListener(this);
             fbForUser.setOnClickListener(this);
-            mAuth = FirebaseAuth.getInstance();
-            mContext = getContext();
-
-            presenter = new LoginPresenter(mContext, this, this, mAuth);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private Boolean checkForCurrentUser() {
+        mContext = getContext();
+        mAuth = FirebaseAuth.getInstance();
+        if (mAuth.getCurrentUser() != null) {
+            mContext.startActivity(new Intent(mContext, HomeActivity.class));
+            getActivity().finish();
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -212,67 +215,6 @@ public class RegisterMethodsFragment extends Fragment implements View.OnClickLis
 
     }
 
-    private void updateUI(FirebaseUser user) {
-        if (user != null) {
-            String name = user.getDisplayName();
-            String email = user.getEmail();
-            String type = "";
-            if (Buser) type = "user";
-            else if (Binstructor) type = "instructor";
-            if (Buser || Binstructor) {
-                User mUser = new User(name, email, type);
-                FireStoreProcess.addUser(mUser);
-                Log.i(TAG, "updateUI: user has been added to Firebase");
-            }
-
-            startActivity(new Intent(getContext(), HomeActivity.class));
-            Objects.requireNonNull(getActivity()).finish();
-        } else Toast.makeText(mContext, "user is null", Toast.LENGTH_SHORT).show();
-
-//        try {
-//            Log.i(TAG, "updateUI(): is called");
-//            if (user != null) {
-//                Log.i(TAG, "updateUI(): FirebaseUser != null");
-//
-//                User newUser = new User();
-//                newUser.setUid(user.getUid());
-//                newUser.setName(user.getDisplayName());
-//                newUser.setEmail(user.getEmail());
-//                newUser.setTokenId(FirebaseInstanceId.getInstance().getToken());
-//
-//                //TODO save user data into shared preferences
-//                mPrefManager.saveString(PrefManager.USER_ID, user.getUid());
-//                mPrefManager.saveString(PrefManager.USER_TOKEN, newUser.getTokenId());
-//                mPrefManager.saveString(PrefManager.USER_NAME, newUser.getTokenId());
-//
-//                Log.i(TAG, "updateUI(): user ID: " + user.getUid() + " saved in sharedPreference");
-//                Log.i(TAG, "updateUI(): user ID: " + user.getDisplayName() + " saved in sharedPreference");
-//
-//                if (user.getEmail() != null) {
-//                    mPrefManager.saveString(PrefManager.USER_EMAIL, user.getEmail());
-//                    Log.i(TAG, "updateUI(): user email: " + user.getEmail());
-//                }
-//
-//                if (user.getPhoneNumber() != null) {
-//                    mPrefManager.saveString(PrefManager.USER_PHONE, user.getPhoneNumber());
-//                    Log.i(TAG, "updateUI(): user phone: " + user.getPhoneNumber());
-//                }
-//
-//                if (AppUtils.inNetwork(mCurrent)) {
-//                    if (mPresenter != null) {
-//                        Log.i(TAG, "updateUI(): saving user into firestore");
-//                        mPresenter.saveUserIntoFireStore(newUser);
-//                    }
-//                }else{
-//                    AppUtils.showAlertDialog(mCurrent,getString(R.string.check_network_connection));
-//                }
-//            }
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-    }
-
     private void startSignInWithFB() {
         try {
             mCallbackManager = CallbackManager.Factory.create();
@@ -338,6 +280,50 @@ public class RegisterMethodsFragment extends Fragment implements View.OnClickLis
                     }
                 });
 
+    }
+
+    private void updateUI(FirebaseUser user) {
+        try {
+            if (user != null) {
+                String type = "";
+                if (Buser) type = "user";
+                else if (Binstructor) type = "instructor";
+                // make user model
+                User newUser = new User();
+                newUser.setUid(user.getUid());
+                newUser.setName(user.getDisplayName());
+                newUser.setEmail(user.getEmail());
+                newUser.setPhotoUri(Objects.requireNonNull(user.getPhotoUrl()).toString());
+                newUser.setUserType(type);
+                //save in shared preferences
+                saveInSharedPref(newUser);
+                // save user in fire store
+                saveInCloud(newUser);
+
+                startActivity(new Intent(getContext(), HomeActivity.class));
+                Objects.requireNonNull(getActivity()).finish();
+            } else Toast.makeText(mContext, "user is null", Toast.LENGTH_SHORT).show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.i(TAG, "updateUI: " + e.getMessage());
+        }
+    }
+
+    private void saveInCloud(User newUser) {
+        FireStoreProcess.addUser(newUser);
+        Log.i(TAG, "updateUI: user has been added to Firebase");
+    }
+
+    private void saveInSharedPref(User user) {
+        mPrefManager.saveString(getResources().getString(R.string.account_id), user.getUid());
+        mPrefManager.saveString(getResources().getString(R.string.account_name), user.getName());
+        mPrefManager.saveString(getResources().getString(R.string.account_email), user.getEmail());
+        mPrefManager.saveString(getResources().getString(R.string.account_photo), user.getPhotoUri());
+        mPrefManager.saveString(getResources().getString(R.string.account_type), user.getUserType());
+        mPrefManager.saveString(getResources().getString(R.string.account_country), "Egypt");
+        mPrefManager.saveString(getResources().getString(R.string.account_phone_number), "empty field");
+        Log.i(TAG, "saveInSharedPref: user saved in shared preferences");
     }
 
     @Override

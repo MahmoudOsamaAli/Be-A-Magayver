@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
     android:background="@android:color/white"
-    tools:context=".view.activities.AddPostActivity">
+    tools:context=".view.activities.addPost.AddPostActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -54,6 +54,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/white"
+                android:focusable="false"
                 android:gravity="top"
                 android:hint="@string/add_caption"
                 android:minHeight="80dp"
@@ -119,14 +120,25 @@
             android:textStyle="bold"
             android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/car_details_button"
+            app:layout_constraintTop_toTopOf="@id/delete_car_details"
+            app:layout_constraintBottom_toBottomOf="@id/delete_car_details"
             tools:text="e.g Toyota Corolla 2010" />
+        <ImageView
+            android:id="@+id/delete_car_details"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_close_gray"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/car_details_button"
+            android:padding="4dp"
+            android:background="?android:attr/selectableItemBackground"
+            />
 
         <TextView
             android:id="@+id/session_duration_label"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_marginTop="4dp"
             android:background="?android:attr/selectableItemBackground"
             android:drawableStart="@drawable/ic_sand_clock"
             android:drawableLeft="@drawable/ic_sand_clock"
@@ -135,12 +147,12 @@
             android:drawablePadding="16dp"
             android:gravity="center_vertical"
             android:padding="8dp"
-            android:text="Session Duration"
+            android:text="Session's Duration"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/car_details_tv" />
+            app:layout_constraintTop_toBottomOf="@id/delete_car_details" />
 
         <TextView
             android:id="@+id/session_duration_tv"
@@ -152,15 +164,25 @@
             android:textColor="@android:color/darker_gray"
             android:textStyle="bold"
             android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/delete_duration"
             app:layout_constraintStart_toStartOf="@id/session_duration_label"
-            app:layout_constraintTop_toBottomOf="@id/session_duration_label"
+            app:layout_constraintTop_toTopOf="@id/delete_duration"
             tools:text="e.g 60 mins" />
+        <ImageView
+            android:id="@+id/delete_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:padding="4dp"
+            android:src="@drawable/ic_close_gray"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/session_duration_label" />
 
         <TextView
             android:id="@+id/start_date_label"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_marginTop="4dp"
             android:background="?android:attr/selectableItemBackground"
             android:drawableStart="@drawable/ic_calender"
             android:drawableLeft="@drawable/ic_calender"
@@ -174,7 +196,7 @@
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/session_duration_tv" />
+            app:layout_constraintTop_toBottomOf="@id/delete_duration" />
 
         <TextView
             android:id="@+id/start_date"
@@ -187,14 +209,24 @@
             android:textStyle="bold"
             android:visibility="gone"
             app:layout_constraintStart_toStartOf="@id/start_date_label"
-            app:layout_constraintTop_toBottomOf="@id/start_date_label"
+            app:layout_constraintTop_toTopOf="@id/delete_start_date"
+            app:layout_constraintBottom_toBottomOf="@+id/delete_start_date"
             tools:text="e.g 20/2/2020" />
+        <ImageView
+            android:id="@+id/delete_start_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:padding="4dp"
+            android:src="@drawable/ic_close_gray"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/start_date_label" />
 
         <TextView
             android:id="@+id/start_time_label"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_marginTop="4dp"
             android:background="?android:attr/selectableItemBackground"
             android:drawableStart="@drawable/ic_time"
             android:drawableLeft="@drawable/ic_time"
@@ -208,8 +240,7 @@
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/start_date" />
-
+            app:layout_constraintTop_toBottomOf="@id/delete_start_date" />
         <TextView
             android:id="@+id/start_time"
             android:layout_width="wrap_content"
@@ -221,14 +252,24 @@
             android:textStyle="bold"
             android:visibility="gone"
             app:layout_constraintStart_toStartOf="@id/start_time_label"
-            app:layout_constraintTop_toBottomOf="@id/start_time_label"
+            app:layout_constraintTop_toTopOf="@id/delete_start_time"
+            app:layout_constraintBottom_toBottomOf="@+id/delete_start_time"
             tools:text="e.g 2:20 PM" />
+        <ImageView
+            android:id="@+id/delete_start_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:padding="4dp"
+            android:src="@drawable/ic_close_gray"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/start_time_label" />
 
         <TextView
             android:id="@+id/phone_number_label"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_marginTop="4dp"
             android:background="?android:attr/selectableItemBackground"
             android:drawableStart="@drawable/ic_phone_24dp"
             android:drawableLeft="@drawable/ic_phone_24dp"
@@ -242,8 +283,7 @@
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/start_time" />
-
+            app:layout_constraintTop_toBottomOf="@id/delete_start_time" />
 
         <TextView
             android:id="@+id/phone_number"
@@ -256,14 +296,69 @@
             android:textStyle="bold"
             android:visibility="gone"
             app:layout_constraintStart_toStartOf="@id/phone_number_label"
-            app:layout_constraintTop_toBottomOf="@id/phone_number_label"
+            app:layout_constraintTop_toTopOf="@id/delete_phone_number"
+            app:layout_constraintBottom_toBottomOf="@+id/delete_phone_number"
+            tools:text="01060413213" />
+
+        <ImageView
+            android:id="@+id/delete_phone_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:padding="4dp"
+            android:src="@drawable/ic_close_gray"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/phone_number_label" />
+
+        <TextView
+            android:id="@+id/price_label"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:drawableStart="@drawable/ic_price"
+            android:drawableLeft="@drawable/ic_price"
+            android:drawableEnd="@drawable/ic_keyboard_arrow_right_24dp"
+            android:drawableRight="@drawable/ic_arrow_right"
+            android:drawablePadding="16dp"
+            android:gravity="center_vertical"
+            android:padding="8dp"
+            android:text="Session's price"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/delete_phone_number" />
+        <ImageView
+            android:id="@+id/delete_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:padding="4dp"
+            android:src="@drawable/ic_close_gray"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/price_label" />
+
+        <TextView
+            android:id="@+id/price_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="50dp"
+            android:layout_marginLeft="50dp"
+            android:fontFamily="@font/montserrat"
+            android:textColor="@android:color/darker_gray"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="@id/price_label"
+            app:layout_constraintTop_toTopOf="@id/delete_price"
+            app:layout_constraintBottom_toBottomOf="@+id/delete_price"
             tools:text="01060413213" />
 
         <TextView
             android:id="@+id/add_location_label"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_marginTop="4dp"
             android:background="?android:attr/selectableItemBackground"
             android:drawableStart="@drawable/ic_add_location_black_24dp"
             android:drawableLeft="@drawable/ic_add_location_black_24dp"
@@ -272,12 +367,12 @@
             android:drawablePadding="16dp"
             android:gravity="center_vertical"
             android:padding="8dp"
-            android:text="Session Location"
+            android:text="Session's Location"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/phone_number" />
+            app:layout_constraintTop_toBottomOf="@id/delete_price" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/locations_icon"

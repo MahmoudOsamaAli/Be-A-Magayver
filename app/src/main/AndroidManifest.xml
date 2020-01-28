@@ -9,6 +9,7 @@
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"  />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -27,11 +28,13 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".view.activities.AddPostActivity"
+            android:name=".view.activities.addPost.AddPostActivity"
+            android:parentActivityName=".view.activities.HomeActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:theme="@style/AppThemeWithActionBar" />
         <activity
             android:name=".view.activities.HomeActivity"
+            android:launchMode="singleTop"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation" />
         <activity
             android:name=".view.activities.AdminAuthActivity"
