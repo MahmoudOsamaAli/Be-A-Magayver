@@ -56,13 +56,24 @@
     <string name="account_type">accountType</string>
     <string name="account_country">country</string>
     <string name="account_phone_number">phoneNumber</string>
-    <string name="get_my_location">Get my location</string>
+    <string name="get_my_location">Open GPS to get your location</string>
+    <string name="update">update</string>
 
     <string-array name="duration_array">
         <item>30 mins</item>
         <item>60 minss</item>
         <item>90 mins</item>
         <item>120 mins</item>
+    </string-array>
+    <string-array name="sort">
+        <item>Sort Sessions By</item>
+        <item>Post Time</item>
+        <item>Near you</item>
+        <item>Likes</item>
+        <item>Joined</item>
+        <item>Cost</item>
+        <item>Duration</item>
+        <item>Start Date</item>
     </string-array>
     <string-array name="country_arrays">
         <item>Country</item>
@@ -307,4 +318,7 @@
         <item>Zambia</item>
         <item>Zimbabwe</item>
     </string-array>
+    <string name="title_activities_list">Items</string>
+    <string name="title_activities_detail">Activities Detail</string>
+    <string name="session_count">sessionCount</string>
 </resources>

@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -30,6 +31,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.beamagayver.R;
 import com.example.beamagayver.pojo.LocationModel;
+import com.example.beamagayver.view.activities.HomeActivity;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -64,6 +66,7 @@ public class MapBottomSheet extends BottomSheetDialogFragment implements OnMapRe
     private DialogListener listener;
     private Activity mContext;
     private Marker marker;
+    private LocationModel locationModel;
     @BindView(R.id.get_location)
     Button getLocationButton;
     @BindView(R.id.icon_close)
@@ -101,6 +104,27 @@ public class MapBottomSheet extends BottomSheetDialogFragment implements OnMapRe
                     .create().show();
         }
     };
+
+
+    public MapBottomSheet() {}
+
+    public MapBottomSheet(LocationModel model) {
+        this.locationModel = model;
+    }
+
+    private void setViews() {
+        currLocation = new LatLng(locationModel.getLatitude() , locationModel.getLongitude());
+        cityEditText.setText(locationModel.getCity());
+        streetEditText.setText(locationModel.getStreet());
+        String country = locationModel.getCountry();
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(mContext, R.array.country_arrays, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        countriesSpinner.setAdapter(adapter);
+        if (country != null) {
+            int spinnerPosition = adapter.getPosition(country);
+            countriesSpinner.setSelection(spinnerPosition);
+        }
+    }
 
 
     @NotNull
@@ -151,14 +175,20 @@ public class MapBottomSheet extends BottomSheetDialogFragment implements OnMapRe
         Log.i(TAG, "onViewCreated: ");
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
+        if(locationModel != null) setViews();
         if (isServiceSDK()) init();
     }
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        mContext = (AddPostActivity) context;
-        listener = (DialogListener) mContext;
+        try {
+            mContext = (AddPostActivity) context;
+            listener = (DialogListener) mContext;
+        } catch (Exception e) {
+            e.printStackTrace();
+            mContext = (HomeActivity)context;
+        }
     }
 
     private boolean isServiceSDK() {
@@ -183,7 +213,8 @@ public class MapBottomSheet extends BottomSheetDialogFragment implements OnMapRe
         closeButton.setOnClickListener(this);
         getLocationButton.setOnClickListener(this);
         countriesSpinner.setOnItemSelectedListener(this);
-        getDeviceLocation();
+        Location location = HomeActivity.getLocation();
+        currLocation = new LatLng(location.getLatitude() , location.getLongitude());
         initMap();
     }
 
@@ -249,7 +280,7 @@ public class MapBottomSheet extends BottomSheetDialogFragment implements OnMapRe
                     !Objects.requireNonNull(streetEditText.getText()).toString().isEmpty() &&
                     !Objects.requireNonNull(cityEditText.getText()).toString().isEmpty()) {
                 Log.i(TAG, "onClick: currLocation not null");
-                LocationModel locationModel = new LocationModel(selectedCountry, cityEditText.getText().toString(),
+                locationModel = new LocationModel(selectedCountry, cityEditText.getText().toString(),
                         streetEditText.getText().toString(), currLocation.longitude, currLocation.latitude);
                 listener.onGetLocationListener(locationModel);
                 dismiss();

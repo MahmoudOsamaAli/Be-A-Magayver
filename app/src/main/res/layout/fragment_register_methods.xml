@@ -68,6 +68,7 @@
                     android:textAllCaps="false"
                     android:fontFamily="@font/montserrat"
                     android:textSize="@dimen/text_content"
+                    android:textColor="@color/white"
                     android:text="Instructor"
                     android:elevation="16dp"/>
                 <LinearLayout
@@ -140,6 +141,7 @@
                     android:background="@drawable/button_shape"
                     android:text="Wanna Be a Magayver"
                     android:textAllCaps="false"
+                    android:textColor="@color/white"
                     android:fontFamily="@font/montserrat"
                     android:textSize="@dimen/text_content"
                     android:elevation="16dp"/>
@@ -224,6 +226,7 @@
                     android:background="@drawable/button_shape"
                     android:text="Admin"
                     android:textAllCaps="false"
+                    android:textColor="@color/white"
                     android:fontFamily="@font/montserrat"
                     android:textSize="@dimen/text_content"
                     android:elevation="16dp"

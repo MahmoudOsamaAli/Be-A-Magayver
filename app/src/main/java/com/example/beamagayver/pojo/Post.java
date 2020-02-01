@@ -1,7 +1,8 @@
 package com.example.beamagayver.pojo;
+import java.io.Serializable;
 
 
-public class Post implements Comparable<Post> {
+public class Post implements Comparable<Post> , Serializable {
     private String mPostID;
     private String mOwnerID;
     private String mOwnerName;

@@ -8,5 +8,6 @@
     <color name="white">#FFFFFF</color>
     <color name="red">#FF0000</color>
     <color name="green">#26E200</color>
+    <color name="primaryLighter">#d288a8</color>
 
 </resources>

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -293,7 +294,7 @@ public class RegisterMethodsFragment extends Fragment implements View.OnClickLis
                 newUser.setUid(user.getUid());
                 newUser.setName(user.getDisplayName());
                 newUser.setEmail(user.getEmail());
-                newUser.setPhotoUri(Objects.requireNonNull(user.getPhotoUrl()).toString());
+                newUser.setPhotoUri(modifyPhoto(user.getPhotoUrl()));
                 newUser.setUserType(type);
                 //save in shared preferences
                 saveInSharedPref(newUser);
@@ -310,6 +311,13 @@ public class RegisterMethodsFragment extends Fragment implements View.OnClickLis
         }
     }
 
+    private String modifyPhoto(Uri photoUrl) {
+        String originalPieceOfUrl = "s96-c/photo.jpg";
+        String newPieceOfUrlToAdd = "s400-c/photo.jpg";
+        String photoPath = photoUrl.toString();
+        return photoPath.replace(originalPieceOfUrl, newPieceOfUrlToAdd);
+    }
+
     private void saveInCloud(User newUser) {
         FireStoreProcess.addUser(newUser);
         Log.i(TAG, "updateUI: user has been added to Firebase");
@@ -323,6 +331,8 @@ public class RegisterMethodsFragment extends Fragment implements View.OnClickLis
         mPrefManager.saveString(getResources().getString(R.string.account_type), user.getUserType());
         mPrefManager.saveString(getResources().getString(R.string.account_country), "Egypt");
         mPrefManager.saveString(getResources().getString(R.string.account_phone_number), "empty field");
+        if (user.getUserType().equals("instructor"))
+            mPrefManager.saveInt(getResources().getString(R.string.session_count), 0);
         Log.i(TAG, "saveInSharedPref: user saved in shared preferences");
     }
 

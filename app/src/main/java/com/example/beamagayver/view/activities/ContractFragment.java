@@ -1,4 +1,4 @@
-package com.example.beamagayver.view.fragments;
+package com.example.beamagayver.view.activities;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

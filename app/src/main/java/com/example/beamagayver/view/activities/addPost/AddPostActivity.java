@@ -25,9 +25,11 @@ import com.example.beamagayver.pojo.JoinedModel;
 import com.example.beamagayver.pojo.LikesModel;
 import com.example.beamagayver.pojo.LocationModel;
 import com.example.beamagayver.pojo.Post;
+import com.example.beamagayver.pojo.UserActivity;
 import com.google.android.material.textfield.TextInputEditText;
 import com.squareup.picasso.Picasso;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
@@ -52,7 +54,6 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
     ImageView deletePhoneNumber;
     @BindView(R.id.delete_price)
     ImageView deletePrice;
-    private PrefManager manager;
     @BindView(R.id.start_time_label)
     TextView startTimeLabel;
     @BindView(R.id.start_date_label)
@@ -85,13 +86,15 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
     TextView addLocationLabel;
     @BindView(R.id.locations_icon)
     ConstraintLayout locationIcon;
-    LocationModel locationModel;
     @BindView(R.id.price_label)
     TextView priceLabel;
     @BindView(R.id.price_tv)
     TextView priceTv;
     @BindView(R.id.delete_location_ic)
     ImageView deleteLocationIcon;
+    private PrefManager manager;
+    private Post mEditPost;
+    LocationModel locationModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,11 +104,44 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
         init();
     }
 
+    private void extractPost(Post post) {
+        postCaption.setText(post.getmPostCaption());
+        postCaption.setVisibility(View.VISIBLE);
+        carDetailsTV.setText(post.getmCarDetails());
+        carDetailsTV.setVisibility(View.VISIBLE);
+        deleteCarDetails.setVisibility(View.VISIBLE);
+        String duration = post.getmDuration() + " hours";
+        sessionDurationTV.setText(duration);
+        sessionDurationTV.setVisibility(View.VISIBLE);
+        deleteDuration.setVisibility(View.VISIBLE);
+        startDateTV.setText(post.getmStartDate());
+        startDateTV.setVisibility(View.VISIBLE);
+        deleteStartDate.setVisibility(View.VISIBLE);
+        startTimeTV.setText(post.getmStartTime());
+        startTimeTV.setVisibility(View.VISIBLE);
+        deleteStartTime.setVisibility(View.VISIBLE);
+        phoneNumber.setText(post.getmPhoneNumber());
+        phoneNumber.setVisibility(View.VISIBLE);
+        deletePhoneNumber.setVisibility(View.VISIBLE);
+        String price = post.getmPrice() + " EGP";
+        priceTv.setText(price);
+        deletePrice.setVisibility(View.VISIBLE);
+        priceTv.setVisibility(View.VISIBLE);
+        locationModel = post.getmLocation();
+        String location = locationModel.getStreet() + ", " + locationModel.getCity() + ", "+locationModel.getCountry();
+        locationTV.setText(location);
+        locationIcon.setVisibility(View.VISIBLE);
+    }
+
     private void init() {
         try {
             manager = new PrefManager(this);
             actionBarConfig();
             setUserInfo();
+            mEditPost = (Post)getIntent().getSerializableExtra("EditPost");
+            if(mEditPost != null) {
+                extractPost(mEditPost);
+            }
             postCaption.setOnClickListener(this);
             deleteCarDetails.setOnClickListener(this);
             deleteDuration.setOnClickListener(this);
@@ -121,6 +157,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
             carDetailsLabel.setOnClickListener(this);
             phoneNumberLabel.setOnClickListener(this);
             addLocationLabel.setOnClickListener(this);
+            locationIcon.setOnClickListener(this);
         } catch (Exception e) {
             Log.i(TAG, "init: exception  ,  " + e.getMessage());
         }
@@ -142,12 +179,16 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.add_post, menu);
+        if(mEditPost != null) inflater.inflate(R.menu.update_post , menu);
+        else inflater.inflate(R.menu.add_post, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.update){
+            updatePost();
+        }
         if (item.getItemId() == R.id.post) {
             createPost();
             Log.i(TAG, "onOptionsItemSelected: finish the activity");
@@ -158,13 +199,38 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
         return super.onOptionsItemSelected(item);
     }
 
+    private void updatePost() {
+        if(checkViews()){
+            String caption = Objects.requireNonNull(postCaption.getText()).toString();
+            String carDetails = carDetailsTV.getText().toString();
+            String duration = sessionDurationTV.getText().toString();
+            String startDate = startDateTV.getText().toString();
+            String startTime = startTimeTV.getText().toString();
+            String number = phoneNumber.getText().toString();
+            String price = priceTv.getText().toString();
+            mEditPost.setmPostCaption(caption);
+            mEditPost.setmCarDetails(carDetails);
+            mEditPost.setmDuration(duration);
+            mEditPost.setmStartDate(startDate);
+            mEditPost.setmStartTime(startTime);
+            mEditPost.setmPhoneNumber(number);
+            mEditPost.setmPrice(price);
+            mEditPost.setmLocation(locationModel);
+            FireStoreProcess.updatePost(mEditPost);
+            Toast.makeText(this, "Updated post", Toast.LENGTH_SHORT).show();
+            finish();
+
+        }
+    }
+
     private void createPost() {
         try {
             if (checkViews()) {
                 String id = manager.readString(getResources().getString(R.string.account_id));
                 String ownerName = manager.readString(getResources().getString(R.string.account_name));
                 String ownerImage = manager.readString(getResources().getString(R.string.account_photo));
-                String postTime = DateFormat.format("dd/MM/yyyy hh:mm a", new Date()).toString();
+                int sessionCount = manager.readInt(getResources().getString(R.string.session_count));
+                String postTime = DateFormat.format("dd/MM/yy hh:mm a", new Date()).toString();
                 Log.i(TAG, "createPost: post time" + postTime);
                 String caption = Objects.requireNonNull(postCaption.getText()).toString();
                 String carDetails = carDetailsTV.getText().toString();
@@ -178,7 +244,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                 Post post = new Post(ownerName, id, ownerImage, postTime, caption, carDetails, duration
                         , startDate, startTime, joined, likes, number, locationModel, price);
                 FireStoreProcess.addPostToUser(post);
-                Log.i(TAG, "createPost: successfully");
+                manager.saveInt(getResources().getString(R.string.session_count) , sessionCount +1);
                 Toast.makeText(this, "Session has been added Successfully", Toast.LENGTH_SHORT).show();
                 finish();
             }
@@ -289,6 +355,13 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                 break;
             case R.id.post_edit_text :
                 postCaption.setFocusableInTouchMode(true);
+                break;
+            case R.id.locations_icon :
+                if(locationModel != null){
+                    MapBottomSheet sheet = new MapBottomSheet(locationModel);
+                    sheet.show(getSupportFragmentManager() , sheet.getTag());
+                }
+                break;
         }
     }
 

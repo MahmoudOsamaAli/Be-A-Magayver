@@ -1,0 +1,132 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/profile_content_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:animateLayoutChanges="true"
+    android:paddingBottom="32dp"
+    android:visibility="visible"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/colorPrimary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:fontFamily="@font/montserrat"
+            android:text="User info"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/icon_close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:padding="12dp"
+            android:src="@drawable/ic_close_black_24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/user_profile_photo"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="40dp"
+        android:elevation="4dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_profile"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+    <TextView
+        android:id="@+id/name_header"
+        style="@android:style/TextAppearance.DeviceDefault.DialogWindowTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@id/user_profile_photo"
+        app:layout_constraintStart_toStartOf="@id/user_profile_photo"
+        app:layout_constraintTop_toBottomOf="@id/user_profile_photo"
+        tools:text="Mahmoud Osama" />
+    <TextView
+        android:id="@+id/instructor_session_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="created 5 sessions"
+        android:layout_marginTop="8dp"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:visibility="visible"
+        app:layout_constraintStart_toStartOf="@id/name_header"
+        app:layout_constraintEnd_toEndOf="@id/name_header"
+        app:layout_constraintTop_toBottomOf="@id/name_header"/>
+
+    <TextView
+        android:id="@+id/user_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:drawableStart="@drawable/ic_star_gold"
+        android:drawableLeft="@drawable/ic_star_gold"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="@id/name_header"
+        app:layout_constraintStart_toStartOf="@id/name_header"
+        app:layout_constraintTop_toBottomOf="@id/instructor_session_count"
+        android:text="Instructor" />
+    <LinearLayout
+        android:id="@+id/phone_number_lb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/user_type">
+
+    <ImageView
+        android:id="@+id/phone_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/ic_phone_primary" />
+
+    <TextView
+        android:id="@+id/phone_tv"
+        style="@android:style/TextAppearance.Medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/montserrat"
+        tools:text="01060143213"
+        android:textSize="@dimen/text_content"
+        android:layout_gravity="center_vertical"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:textStyle="bold"
+        android:paddingLeft="8dp" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -62,80 +62,87 @@
             android:src="@drawable/ic_more_horiz_gray_24dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
         <LinearLayout
             android:id="@+id/post_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintStart_toStartOf="@id/post_owner_profile_group"
-            app:layout_constraintTop_toBottomOf="@id/post_owner_profile_group" >
-        <TextView
-            android:id="@+id/post_caption"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:fontFamily="@font/montserrat"
-            android:text="@string/post_contnent"
-            android:textSize="@dimen/text_content"
-            app:layout_constraintStart_toStartOf="@id/post_owner_profile_group"
-            app:layout_constraintTop_toBottomOf="@id/post_owner_profile_group" />
+            app:layout_constraintTop_toBottomOf="@id/post_owner_profile_group">
+
+            <TextView
+                android:id="@+id/post_caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/montserrat"
+                android:text="@string/post_contnent"
+                android:textSize="@dimen/text_content"
+                app:layout_constraintStart_toStartOf="@id/post_owner_profile_group"
+                app:layout_constraintTop_toBottomOf="@id/post_owner_profile_group" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
+
                 <TextView
                     android:id="@+id/post_car_details_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Car Details : "
-                    android:textStyle="bold"
-                    />
+                    android:textStyle="bold" />
+
                 <TextView
                     android:id="@+id/post_car_details"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    tools:text="Toyota Corolla 2019 black"
                     android:paddingStart="8dp"
-                    android:paddingLeft="8dp" />
+                    android:paddingLeft="8dp"
+                    tools:text="Toyota Corolla 2019 black" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
+
                 <TextView
                     android:id="@+id/post_start_date_time_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Session's Start Date : "
-                    android:textStyle="bold"
-                    />
+                    android:textStyle="bold" />
+
                 <TextView
                     android:id="@+id/post_start_date_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    tools:text="15/2/2020 - 1:50 PM"
                     android:paddingStart="8dp"
-                    android:paddingLeft="8dp" />
+                    android:paddingLeft="8dp"
+                    tools:text="15/2/2020 - 1:50 PM" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
+
                 <TextView
                     android:id="@+id/post_duration_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Session Duration : "
-                    android:textStyle="bold"
-                    />
+                    android:textStyle="bold" />
+
                 <TextView
                     android:id="@+id/post_duration"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    tools:text="30 minutes"
                     android:paddingStart="8dp"
-                    android:paddingLeft="8dp" />
+                    android:paddingLeft="8dp"
+                    tools:text="30 minutes" />
             </LinearLayout>
 
             <LinearLayout
@@ -158,6 +165,7 @@
                     android:paddingLeft="8dp"
                     tools:text="01060413213" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -183,34 +191,35 @@
                 android:id="@+id/distance_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?android:attr/selectableItemBackground"
                 android:animateLayoutChanges="true"
+                android:background="?android:attr/selectableItemBackground"
                 android:clickable="true"
                 android:focusable="true"
+                android:orientation="horizontal"
                 android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:orientation="horizontal">
+                android:paddingBottom="8dp">
+
                 <ImageView
                     android:id="@+id/post_cal_location_image"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/icons_marker_yellow"
-                    />
+                    android:src="@drawable/icons_marker_yellow" />
+
                 <TextView
                     android:id="@+id/post_distance"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    tools:text="34.5 miles away from you"
                     android:paddingStart="8dp"
-                    android:paddingLeft="8dp" />
+                    android:paddingLeft="8dp"
+                    tools:text="34.5 miles away from you" />
+
                 <ProgressBar
                     android:id="@+id/get_location_progress"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_gravity="end"
                     android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
-                    />
+                    android:layout_marginLeft="8dp" />
             </LinearLayout>
         </LinearLayout>
 
@@ -224,81 +233,80 @@
             app:layout_constraintTop_toBottomOf="@id/post_content">
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/like_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_margin="4dp"
                 android:layout_gravity="center"
+                android:layout_margin="4dp"
+                android:layout_weight="1"
                 android:background="@drawable/button_shape_gray"
                 android:padding="6dp">
+
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/like_button"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:padding="4dp"
                     android:background="?android:attr/selectableItemBackground"
+                    android:padding="4dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    >
+                    app:layout_constraintTop_toTopOf="parent">
 
-                <ImageView
-                    android:id="@+id/like_image"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_favorite_blanck"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    <ImageView
+                        android:id="@+id/like_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_favorite_blanck"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:id="@+id/like_count"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:text="15 likes"
-                    android:textSize="12sp"
-                    android:textAllCaps="false"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/like_image"
-                    app:layout_constraintTop_toTopOf="parent"
-                    />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                    <TextView
+                        android:id="@+id/like_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="15 likes"
+                        android:textAllCaps="false"
+                        android:textSize="12sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/like_image"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/join_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_margin="4dp"
                 android:layout_gravity="center"
+                android:layout_margin="4dp"
+                android:layout_weight="1"
                 android:background="@drawable/button_shape_gray"
                 android:padding="6dp">
+
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/join_button"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:padding="4dp"
                     android:background="?android:attr/selectableItemBackground"
+                    android:padding="4dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    >
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <ImageView
                         android:id="@+id/join_image"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:paddingRight="8dp"
                         android:src="@drawable/ic_check_gray_24dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        android:paddingRight="8dp" />
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
                         android:id="@+id/join_count"
@@ -306,14 +314,13 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:gravity="center"
-                        android:textSize="12sp"
                         android:text="15 joined"
                         android:textAllCaps="false"
+                        android:textSize="12sp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@id/join_image"
-                        app:layout_constraintTop_toTopOf="parent"
-                         />
+                        app:layout_constraintTop_toTopOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 

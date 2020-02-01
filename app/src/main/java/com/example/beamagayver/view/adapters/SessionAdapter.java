@@ -1,17 +1,13 @@
 package com.example.beamagayver.view.adapters;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.net.Uri;
-import android.os.Bundle;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -27,7 +23,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.beamagayver.R;
@@ -37,58 +32,36 @@ import com.example.beamagayver.data.PrefManager;
 import com.example.beamagayver.pojo.JoinedModel;
 import com.example.beamagayver.pojo.LikesModel;
 import com.example.beamagayver.pojo.Post;
+import com.example.beamagayver.pojo.UserActivity;
+import com.example.beamagayver.view.activities.HomeActivity;
+import com.example.beamagayver.view.activities.addPost.AddPostActivity;
+import com.example.beamagayver.view.fragments.sessionFragment.showProfile;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.squareup.picasso.Picasso;
 
-import java.util.Objects;
+import java.util.Date;
 
 public class SessionAdapter extends FirestoreRecyclerAdapter<Post, SessionAdapter.MyHolder> {
 
     private static final String TAG = "SessionAdapter";
-    private static final int LOCATION_REQUEST_CODE = 1;
     private double sessionLON;
     private double sessionLAT;
     private Context mContext;
     private Activity mActivity;
-    private Location mCurrentLocation;
+    private Location mCurrentLocation = HomeActivity.mCurrentLocation;
     private String userID;
-    private final LocationListener locationListener = new LocationListener() {
+    private String userType;
+    private showProfile listener;
 
-        @Override
-        public void onLocationChanged(Location location) {
-            double lon = location.getLongitude();
-            double lat = location.getLatitude();
-            mCurrentLocation = location;
-            Log.i(TAG, "onLocationChanged: lon " + lon + " ,lat " + lat);
-            notifyDataSetChanged();
-        }
-
-        @Override
-        public void onStatusChanged(String s, int i, Bundle bundle) {
-        }
-
-        @Override
-        public void onProviderEnabled(String s) {
-        }
-
-        @Override
-        public void onProviderDisabled(String s) {
-            new AlertDialog.Builder(mContext)
-                    .setMessage("Open GPS to calculate how are sessions far away from you")
-                    .setPositiveButton("Ok", (dialogInterface, i) -> dialogInterface.dismiss())
-                    .create().show();
-        }
-    };
-
-
-    public SessionAdapter(@NonNull FirestoreRecyclerOptions<Post> options, Context context, Activity activity) {
+    public SessionAdapter(@NonNull FirestoreRecyclerOptions<Post> options, Context context, Activity activity ,showProfile listener) {
         super(options);
         mContext = context;
         mActivity = activity;
+        this.listener = listener;
         PrefManager prefManager = new PrefManager(context);
         userID = prefManager.readString(mContext.getResources().getString(R.string.account_id));
-        initLocation();
+        userType = prefManager.readString(mContext.getResources().getString(R.string.account_type));
     }
 
     @Override
@@ -100,7 +73,7 @@ public class SessionAdapter extends FirestoreRecyclerAdapter<Post, SessionAdapte
             sessionLAT = p.getmLocation().getLatitude();
             sessionLON = p.getmLocation().getLongitude();
             if (mCurrentLocation != null) {
-                double distance = NumberUtils.distance(sessionLAT, sessionLON , mCurrentLocation);
+                double distance = NumberUtils.distance(sessionLAT, sessionLON, mCurrentLocation);
                 String dis = distance + " Kilometers away from you";
                 holder.postDist.setVisibility(View.VISIBLE);
                 holder.postDist.setText(dis);
@@ -128,11 +101,23 @@ public class SessionAdapter extends FirestoreRecyclerAdapter<Post, SessionAdapte
             setJoined(joinedModel.getUsers().contains(userID), holder);
             holder.likesCount.setText(likes);
             holder.joinedCount.setText(joined);
+            setViews(holder , p);
         } catch (Exception e) {
             e.printStackTrace();
             Log.i(TAG, "onBindViewHolder: " + e.getMessage());
         }
     }
+
+    private void setViews(MyHolder holder, Post p) {
+        if(p.getmOwnerID().equals(userID)){
+            holder.menu.setVisibility(View.VISIBLE);
+            holder.join.setVisibility(View.GONE);
+        }else{
+            holder.menu.setVisibility(View.GONE);
+            holder.join.setVisibility(View.VISIBLE);
+        }
+    }
+
 
     private void setLikes(boolean liked, MyHolder holder) {
         try {
@@ -164,32 +149,6 @@ public class SessionAdapter extends FirestoreRecyclerAdapter<Post, SessionAdapte
             Log.i(TAG, "setLikes: joined " + false);
             holder.joinedImage.setImageResource(R.drawable.ic_check_gray_24dp);
             holder.joinedCount.setTextColor(mContext.getResources().getColor(R.color.gray_dark));
-        }
-    }
-
-    private void initLocation() {
-        try {
-            if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(mContext)
-                    , Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                    || ActivityCompat.checkSelfPermission(mContext
-                    , Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(mActivity
-                        , new String[]{Manifest.permission.ACCESS_COARSE_LOCATION
-                                , Manifest.permission.ACCESS_FINE_LOCATION}
-                        , LOCATION_REQUEST_CODE);
-                Log.i(TAG, "initLocation: no permission to get location");
-            } else {
-                Log.i(TAG, "initLocation: called");
-                LocationManager lm = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
-                if (lm != null) {
-                    lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10,
-                            locationListener);
-                    mCurrentLocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.i(TAG, "initLocation: catched an exception" + e.getMessage());
         }
     }
 
@@ -253,7 +212,8 @@ public class SessionAdapter extends FirestoreRecyclerAdapter<Post, SessionAdapte
             call.setOnClickListener(this);
             join.setOnClickListener(this);
             distLayout.setOnClickListener(this);
-
+            mOwnerImage.setOnClickListener(this);
+            mOwnerName.setOnClickListener(this);
         }
 
         @Override
@@ -278,13 +238,22 @@ public class SessionAdapter extends FirestoreRecyclerAdapter<Post, SessionAdapte
                     break;
                 case R.id.distance_layout:
                     if (mCurrentLocation != null) {
-                        launchGoogleMaps(mContext, sessionLAT, sessionLON);
+                        launchGoogleMapsApp(mContext, sessionLAT, sessionLON);
                     } else {
                         postDist.setVisibility(View.GONE);
                         progressBar.setVisibility(View.VISIBLE);
-                        initLocation();
+                        mCurrentLocation = HomeActivity.getLocation();
                     }
                     break;
+                case R.id.post_owner_imaage :
+                    Log.i(TAG, "onClick: post owner image clicked");
+                    listener.onImageClicked(currPost.getmOwnerID());
+                    break;
+                case R.id.post_owner_name_tv:
+                    Log.i(TAG, "onClick: post owner name clicked");
+                    listener.onImageClicked(currPost.getmOwnerID());
+                    break;
+
             }
         }
 
@@ -292,7 +261,7 @@ public class SessionAdapter extends FirestoreRecyclerAdapter<Post, SessionAdapte
             try {
                 String number = mPhoneNumber.getText().toString();
                 if (!number.equals("")) {
-                    Intent intent = new Intent(Intent.ACTION_CALL);
+                    Intent intent = new Intent(Intent.ACTION_DIAL);
                     intent.setData(Uri.parse("tel:" + mPhoneNumber.getText()));
                     mContext.startActivity(intent);
                 } else {
@@ -305,21 +274,31 @@ public class SessionAdapter extends FirestoreRecyclerAdapter<Post, SessionAdapte
         }
 
         private void performJoined() {
+            UserActivity activity = new UserActivity();
+            activity.setUid(userID);
+            activity.setAccountName(currPost.getmOwnerName());
+            activity.setPostID(currPost.getmPostID());
+            activity.setTime(DateFormat.format("dd/MM/yyyy hh:mm a", new Date()).toString());
             String postID = currPost.getmPostID();
             if (!joined) {
                 joined = true;
                 Log.i(TAG, "onClick: joined");
                 FireStoreProcess.updatePostLikesJoined(postID, "mJoined", 1, userID);
+                activity.setJoined(true);
+                FireStoreProcess.addUserActivity(activity ,userID , userType);
             } else {
                 joined = false;
                 Log.i(TAG, "onClick: not joined");
                 FireStoreProcess.updatePostLikesJoined(postID, "mJoined", -1, userID);
+                activity.setJoined(false);
+                FireStoreProcess process = new FireStoreProcess(mContext);
+                FireStoreProcess.deleteActivity(userID , currPost.getmPostID() , userType);
             }
+
 
         }
 
         private void performLiked() {
-
             String postID = currPost.getmPostID();
             if (!liked) {
                 liked = true;
@@ -332,7 +311,7 @@ public class SessionAdapter extends FirestoreRecyclerAdapter<Post, SessionAdapte
             }
         }
 
-        private void launchGoogleMaps(Context context, double latitude, double longitude) {
+        private void launchGoogleMapsApp(Context context, double latitude, double longitude) {
             try {
                 String format = "geo:0,0?q=" + latitude + "," + longitude + "(" + "Session location" + ")";
                 Uri uri = Uri.parse(format);
@@ -341,14 +320,25 @@ public class SessionAdapter extends FirestoreRecyclerAdapter<Post, SessionAdapte
                 context.startActivity(intent);
             } catch (Exception e) {
                 e.printStackTrace();
-                Log.i(TAG, "launchGoogleMaps: " + e.getMessage());
+                Log.i(TAG, "launchGoogleMapsApp: " + e.getMessage());
             }
         }
 
         @Override
         public boolean onMenuItemClick(MenuItem item) {
             if (item.getItemId() == R.id.delete_post) {
-                Toast.makeText(mContext, "deleting the post", Toast.LENGTH_SHORT).show();
+                new AlertDialog.Builder(mContext)
+                        .setMessage("Are you sure you want to delete this session")
+                        .setPositiveButton("yes", (dialogInterface, i) -> {
+                            FireStoreProcess.deletePost(currPost.getmPostID());
+                            dialogInterface.dismiss();
+                        }).setNegativeButton("No", (dialogInterface, i) -> {
+                            dialogInterface.dismiss();
+                        }).create().show();
+            }else if(item.getItemId() == R.id.edit_post){
+                Intent intent = new Intent(mActivity , AddPostActivity.class);
+                intent.putExtra("EditPost", currPost);
+                mContext.startActivity(intent);
             }
             return true;
         }

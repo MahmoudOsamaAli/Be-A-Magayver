@@ -75,6 +75,20 @@
                 app:layout_constraintTop_toBottomOf="@id/user_profile_photo"
                 tools:text="Mahmoud Osama" />
             <TextView
+                android:id="@+id/instructor_session_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="created 5 sessions"
+                android:layout_marginTop="8dp"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:gravity="center"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="@id/name_header"
+                app:layout_constraintEnd_toEndOf="@id/name_header"
+                app:layout_constraintTop_toBottomOf="@id/name_header"/>
+
+            <TextView
                 android:id="@+id/user_type"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -86,7 +100,7 @@
                 android:gravity="center"
                 app:layout_constraintEnd_toEndOf="@id/name_header"
                 app:layout_constraintStart_toStartOf="@id/name_header"
-                app:layout_constraintTop_toBottomOf="@id/name_header"
+                app:layout_constraintTop_toBottomOf="@id/instructor_session_count"
                 tools:text="Instructor" />
 
             <LinearLayout

@@ -23,19 +23,14 @@ import com.example.beamagayver.R;
 import com.example.beamagayver.data.PrefManager;
 import com.example.beamagayver.pojo.User;
 import com.example.beamagayver.view.activities.WelcomeActivity;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import butterknife.BindView;
@@ -57,6 +52,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener, V
     private String type;
     private String phoneNumber;
     private String country;
+    private int sessionCount;
     private boolean isEditNameState = false;
     private boolean isEditPhoneState = false;
     private boolean isEditCountryState = false;
@@ -90,6 +86,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener, V
     TextView nameHeader;
     @BindView(R.id.user_type)
     TextView userTypeTV;
+    @BindView(R.id.instructor_session_count)
+    TextView sessionCountTV;
 
 
     @Override
@@ -132,11 +130,21 @@ public class ProfileFragment extends Fragment implements View.OnClickListener, V
         Log.i(TAG, "setViews: started");
         accountNameET.setText(name);
         accountEmail.setText(email);
-        userTypeTV.setText(type);
         nameHeader.setText(name);
         countryET.setText(country);
         phoneNumberET.setText(phoneNumber);
         picasso.load(photoUri).into(userProfilePhoto);
+        if (type.equals("instructor")) {
+            userTypeTV.setText("Instructor");
+            sessionCountTV.setVisibility(View.VISIBLE);
+            String count = "Created "+sessionCount +" sessions";
+            sessionCountTV.setText(count);
+
+        }else if(type.equals("user")){
+            userTypeTV.setText("New learner");
+        }else{
+            userTypeTV.setText("Admin");
+        }
     }
 
     private void loadUserData() {
@@ -148,6 +156,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener, V
         type = prefManager.readString(getResources().getString(R.string.account_type));
         country = prefManager.readString(getResources().getString(R.string.account_country));
         phoneNumber = prefManager.readString(getResources().getString(R.string.account_phone_number));
+        sessionCount = prefManager.readInt(getResources().getString(R.string.session_count));
     }
 
     private void openGallery() {

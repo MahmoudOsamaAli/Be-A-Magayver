@@ -1,5 +1,7 @@
 package com.example.beamagayver.pojo;
 
+import java.util.ArrayList;
+
 public class User {
 
     private String Uid;
@@ -19,6 +21,7 @@ public class User {
         this.userType = mUserType;
     }
     public User(){}
+
 
     public String getUid() {
         return Uid;

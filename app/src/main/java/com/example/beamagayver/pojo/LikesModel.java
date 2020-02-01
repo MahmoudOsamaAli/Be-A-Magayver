@@ -1,8 +1,9 @@
 package com.example.beamagayver.pojo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class LikesModel {
+public class LikesModel implements Serializable {
 
     private int number;
     private ArrayList<String> users;

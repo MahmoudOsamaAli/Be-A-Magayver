@@ -1,9 +1,18 @@
 package com.example.beamagayver.pojo;
-public class LocationModel {
+
+import android.location.Location;
+
+import com.example.beamagayver.Utilities.NumberUtils;
+import com.example.beamagayver.view.activities.HomeActivity;
+
+import java.io.Serializable;
+
+public class LocationModel implements Serializable ,Comparable<LocationModel>{
 
     private String country;
     private String city;
     private String street;
+    private String distance;
     private double latitude;
     private double longitude;
 
@@ -17,8 +26,16 @@ public class LocationModel {
         this.country = mCountry;
         this.city = mCity;
         this.street = mStreet;
+        distance = String.valueOf(NumberUtils.distance(latitude , log , new Location(HomeActivity.getLocation())));
     }
 
+    public String getDistance() {
+        return distance;
+    }
+
+    public void setDistance(String distance) {
+        this.distance = distance;
+    }
 
     public String getCountry() {
         return country;
@@ -60,5 +77,8 @@ public class LocationModel {
         this.longitude = longitude;
     }
 
-
+    @Override
+    public int compareTo(LocationModel model) {
+        return distance.compareTo(model.distance);
+    }
 }
