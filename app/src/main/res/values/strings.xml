@@ -67,7 +67,7 @@
     </string-array>
     <string-array name="sort">
         <item>Sort Sessions By</item>
-        <item>Post Time</item>
+        <item>Newest</item>
         <item>Near you</item>
         <item>Likes</item>
         <item>Joined</item>
@@ -321,4 +321,5 @@
     <string name="title_activities_list">Items</string>
     <string name="title_activities_detail">Activities Detail</string>
     <string name="session_count">sessionCount</string>
+    <string name="edit_session">Edit Session</string>
 </resources>

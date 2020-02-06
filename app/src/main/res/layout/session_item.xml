@@ -53,6 +53,21 @@
             </LinearLayout>
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/deprecated"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/post_owner_profile_group"
+            app:layout_constraintStart_toEndOf="@id/post_owner_profile_group"
+            android:text="ended"
+            android:textSize="16sp"
+            android:textColor="@color/red"
+            android:layout_marginStart="16sp"
+            android:layout_marginTop="8dp"
+            android:layout_marginLeft="16sp"
+            android:visibility="gone"
+            />
+
         <ImageView
             android:id="@+id/post_menu"
             android:layout_width="wrap_content"

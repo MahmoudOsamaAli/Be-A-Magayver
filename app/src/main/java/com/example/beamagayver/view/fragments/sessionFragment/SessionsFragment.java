@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -17,7 +16,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,11 +23,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.beamagayver.R;
 import com.example.beamagayver.data.PrefManager;
 import com.example.beamagayver.pojo.Post;
-import com.example.beamagayver.view.activities.addPost.AddPostActivity;
-import com.example.beamagayver.view.adapters.RecyclerViewListClicked;
+import com.example.beamagayver.view.activities.AddPostActivity;
 import com.example.beamagayver.view.adapters.SessionAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -63,6 +59,7 @@ public class SessionsFragment extends Fragment implements View.OnClickListener ,
     TextView noSessionsTV;
     @BindView(R.id.sort_spinner)
     Spinner sortSpinner;
+    LinearLayoutManager layoutManager;
 
 
     @Override
@@ -86,12 +83,13 @@ public class SessionsFragment extends Fragment implements View.OnClickListener ,
                     .build();
             adapter = new SessionAdapter(options, mContext , activity, this );
             RV.setHasFixedSize(true);
-            RV.setLayoutManager(new LinearLayoutManager(getContext()));
+            layoutManager = new LinearLayoutManager(getContext());
+            RV.setLayoutManager(layoutManager);
             RV.setAdapter(adapter);
             progressBar.setVisibility(View.GONE);
             noSessionsImage.setVisibility(View.GONE);
             noSessionsTV.setVisibility(View.GONE);
-
+            adapter.notifyDataSetChanged();
         } catch (Exception e) {
             e.printStackTrace();
             Log.i(TAG, "init: " + e.getMessage());
@@ -134,37 +132,88 @@ public class SessionsFragment extends Fragment implements View.OnClickListener ,
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
         String selected = adapterView.getItemAtPosition(i).toString();
+        FirestoreRecyclerOptions<Post> options;
         Log.i(TAG, "onItemSelected: selected item = " + selected);
         switch (selected){
             case "Near you" :
-                sort = "mLocation";
+                sort = "distance";
+                query =  reference.orderBy(sort, Query.Direction.ASCENDING);
+                options = new FirestoreRecyclerOptions.Builder<Post>()
+                        .setQuery(query, Post.class)
+                        .build();
+                adapter = new SessionAdapter(options, mContext , activity , this);
+                RV.setAdapter(adapter);
+                adapter.startListening();
+                Log.i(TAG, "onItemSelected: Near you");
                 break;
             case "Likes":
                 sort = "mLikes";
+                query =  reference.orderBy(sort, Query.Direction.DESCENDING);
+                options = new FirestoreRecyclerOptions.Builder<Post>()
+                        .setQuery(query, Post.class)
+                        .build();
+                adapter = new SessionAdapter(options, mContext , activity , this);
+                RV.setAdapter(adapter);
+                adapter.startListening();
+                Log.i(TAG, "onItemSelected: likes");
                 break;
             case "Joined":
                 sort = "mJoined";
+                query =  reference.orderBy(sort, Query.Direction.DESCENDING);
+                options = new FirestoreRecyclerOptions.Builder<Post>()
+                        .setQuery(query, Post.class)
+                        .build();
+                adapter = new SessionAdapter(options, mContext , activity , this);
+                RV.setAdapter(adapter);
+                adapter.startListening();
+                Log.i(TAG, "onItemSelected: joined");
                 break;
             case "Cost":
                 sort = "mPrice";
+                query =  reference.orderBy(sort, Query.Direction.ASCENDING);
+                options = new FirestoreRecyclerOptions.Builder<Post>()
+                        .setQuery(query, Post.class)
+                        .build();
+                adapter = new SessionAdapter(options, mContext , activity , this);
+                RV.setAdapter(adapter);
+                adapter.startListening();
+                Log.i(TAG, "onItemSelected: cost");
                 break;
             case "Duration" :
                 sort = "mDuration";
+                query =  reference.orderBy(sort, Query.Direction.ASCENDING);
+                options = new FirestoreRecyclerOptions.Builder<Post>()
+                        .setQuery(query, Post.class)
+                        .build();
+                adapter = new SessionAdapter(options, mContext , activity , this);
+                RV.setAdapter(adapter);
+                adapter.startListening();
+                Log.i(TAG, "onItemSelected: duration");
                 break;
             case "Start Date":
                 sort = "mStartDate";
+                query =  reference.orderBy(sort, Query.Direction.ASCENDING);
+                options = new FirestoreRecyclerOptions.Builder<Post>()
+                        .setQuery(query, Post.class)
+                        .build();
+                adapter = new SessionAdapter(options, mContext , activity , this);
+                RV.setAdapter(adapter);
+                adapter.startListening();
                 break;
                 default:
                     sort = "mPostTime";
+                    query =  reference.orderBy(sort, Query.Direction.DESCENDING);
+                    options = new FirestoreRecyclerOptions.Builder<Post>()
+                            .setQuery(query, Post.class)
+                            .build();
+                    adapter = new SessionAdapter(options, mContext , activity , this);
+                    RV.setAdapter(adapter);
+                    adapter.startListening();
+                    Log.i(TAG, "onItemSelected: post time");
         }
-        query =  reference.orderBy(sort, Query.Direction.ASCENDING);
-        FirestoreRecyclerOptions<Post> options = new FirestoreRecyclerOptions.Builder<Post>()
-                .setQuery(query, Post.class)
-                .build();
-        adapter = new SessionAdapter(options, mContext , activity , this);
-        RV.setAdapter(adapter);
+
         Log.i(TAG, "onItemSelected: start listening adapter");
-        adapter.startListening();
+
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.example.beamagayver.view.fragments.activities;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,13 +24,11 @@ import com.example.beamagayver.R;
 import com.example.beamagayver.Utilities.NumberUtils;
 import com.example.beamagayver.data.FireStoreProcess;
 import com.example.beamagayver.data.PrefManager;
-import com.example.beamagayver.pojo.LikesModel;
 import com.example.beamagayver.pojo.LocationModel;
 import com.example.beamagayver.pojo.Post;
 import com.example.beamagayver.pojo.UserActivity;
 import com.example.beamagayver.view.activities.HomeActivity;
-import com.example.beamagayver.view.activities.addPost.AddPostActivity;
-import com.example.beamagayver.view.activities.addPost.MapBottomSheet;
+import com.example.beamagayver.Utilities.MapBottomSheet;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
@@ -40,8 +40,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class postBottomSheet extends BottomSheetDialogFragment implements View.OnClickListener {
-    private static final String TAG = "postBottomSheet";
+public class PostBottomSheet extends BottomSheetDialogFragment implements View.OnClickListener {
+    private static final String TAG = "PostBottomSheet";
 
     private Location mCurrentLocation;
     @BindView(R.id.post_owner_imaage)
@@ -88,13 +88,14 @@ public class postBottomSheet extends BottomSheetDialogFragment implements View.O
     private UserActivity userActivity;
     private String uid;
     private String type;
-    private PrefManager manager;
     private Post post;
+    private int likes;
+    private int joins;
     private boolean isLiked;
     private boolean isJoined;
     private Activity mActivity;
 
-    public postBottomSheet(UserActivity userActivity, Activity activity) {
+    PostBottomSheet(UserActivity userActivity, Activity activity) {
         this.userActivity = userActivity;
         this.mActivity = activity;
         postID = userActivity.getPostID();
@@ -115,7 +116,7 @@ public class postBottomSheet extends BottomSheetDialogFragment implements View.O
     }
 
     private void init() {
-        manager = new PrefManager(getContext());
+        PrefManager manager = new PrefManager(getContext());
         uid = manager.readString(Objects.requireNonNull(getContext()).getResources().getString(R.string.account_id));
         type = manager.readString(Objects.requireNonNull(getContext()).getResources().getString(R.string.account_type));
         likeButton.setOnClickListener(this);
@@ -145,7 +146,8 @@ public class postBottomSheet extends BottomSheetDialogFragment implements View.O
                         List<Post> posts = task.getResult().toObjects(Post.class);
                         for (Post p : posts) {
                             if (p.getmOwnerID().equals(uid) && p.getmPostTime().equals(userActivity.getTime())) {
-                                setViews(p);
+                                post = p;
+                                setViews(post);
                                 break;
                             }
                             Log.i(TAG, "getPost: post is null");
@@ -181,42 +183,49 @@ public class postBottomSheet extends BottomSheetDialogFragment implements View.O
             } else {
                 Log.i(TAG, "setViews: " + null);
             }
-            String likes = post.getmLikes().getNumber() + " likes";
-            likeCount.setText(likes);
-            setLike(post.getmLikes().getUsers().contains(uid));
-            setJoined(post.getmJoined().getUsers().contains(uid));
-            String joined = post.getmJoined().getNumber() + " joined";
-            joinCount.setText(joined);
+            likes = post.getmLikes().getNumber();
+            joins = post.getmJoined().getNumber();
+            setLike(post.getmLikes().getUsers().contains(uid) , likes);
+            setJoined(post.getmJoined().getUsers().contains(uid) , joins);
+
         } catch (Exception e) {
             e.printStackTrace();
             Log.i(TAG, "setViews: " + e.getMessage());
         }
     }
 
-    private void setJoined(boolean joined) {
+    private void setJoined(boolean joined , int joinedCount) {
         Log.i(TAG, "setJoined: " + joined);
         if (joined) {
+            Log.i(TAG, "setJoined: setting joined action");
             isJoined = true;
             joinImage.setImageResource(R.drawable.ic_check_green_24dp);
             joinCount.setTextColor(Objects.requireNonNull(getContext()).getResources().getColor(R.color.green));
         } else {
+            Log.i(TAG, "setJoined: setting not joined action");
             isJoined = false;
             joinImage.setImageResource(R.drawable.ic_check_gray_24dp);
             joinCount.setTextColor(Objects.requireNonNull(getContext()).getResources().getColor(R.color.gray_dark));
         }
+        String j = joinedCount + " joined";
+        joinCount.setText(j);
     }
 
-    private void setLike(boolean like) {
+    private void setLike(boolean like , int likesCount) {
         Log.i(TAG, "setLike: " + like);
         if (like) {
+            Log.i(TAG, "setJoined: setting like action");
             isLiked = true;
             likeImage.setImageResource(R.drawable.ic_favorite_red);
             likeCount.setTextColor(Objects.requireNonNull(getContext()).getResources().getColor(R.color.red));
         } else {
+            Log.i(TAG, "setJoined: setting unlike action");
             isLiked = false;
             likeImage.setImageResource(R.drawable.ic_favorite_blanck);
             likeCount.setTextColor(Objects.requireNonNull(getContext()).getResources().getColor(R.color.gray_dark));
         }
+        String l = likesCount + " likes";
+        likeCount.setText(l);
     }
 
     @Override
@@ -225,29 +234,40 @@ public class postBottomSheet extends BottomSheetDialogFragment implements View.O
         if (post != null) {
             if (view.equals(likeButton)) {
                 if (isLiked) {
+                    likes-=1;
+                    setLike(false , likes);
                     FireStoreProcess.updatePostLikesJoined(postID, "mLikes", 0, uid);
-                    dismiss();
                 } else {
+                    likes++;
+                    setLike(true , likes);
                     FireStoreProcess.updatePostLikesJoined(postID, "mLikes", 1, uid);
-                    dismiss();
                 }
             } else if (view.equals(joinButton)) {
                 if (isJoined) {
-                    setJoined(false);
+                    joins--;
+                    setJoined(false , joins);
                     FireStoreProcess.updatePostLikesJoined(postID, "mJoined", -1, uid);
-                    dismiss();
                 } else {
-                    setJoined(true);
+                    joins++;
+                    setJoined(true , joins);
                     FireStoreProcess.updatePostLikesJoined(postID, "mJoined", 1, uid);
-                    dismiss();
                 }
             } else if (view.equals(callButton)) {
-
+                String number = post.getmPhoneNumber();
+                if (!number.equals("")) {
+                    Intent intent = new Intent(Intent.ACTION_DIAL);
+                    intent.setData(Uri.parse("tel:" + number));
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(getContext(), "No Phone Number Applied", Toast.LENGTH_SHORT).show();
+                }
             } else if (view.equals(distanceLayout)) {
                 MapBottomSheet dialog = new MapBottomSheet(post.getmLocation());
                 dialog.show((Objects.requireNonNull(getActivity())).getSupportFragmentManager(), dialog.getTag());
                 dismiss();
             }
+        }else {
+            Log.i(TAG, "onClick: post is null");
         }
     }
 }

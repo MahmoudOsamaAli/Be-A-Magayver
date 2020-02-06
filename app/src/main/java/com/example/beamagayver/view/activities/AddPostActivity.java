@@ -1,7 +1,9 @@
-package com.example.beamagayver.view.activities.addPost;
+package com.example.beamagayver.view.activities;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.location.Location;
+import android.location.LocationListener;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -19,17 +21,22 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.beamagayver.R;
+import com.example.beamagayver.Utilities.CustomDialog;
+import com.example.beamagayver.Utilities.DatePicker;
+import com.example.beamagayver.Utilities.DialogListener;
+import com.example.beamagayver.Utilities.GetLocation;
+import com.example.beamagayver.Utilities.MapBottomSheet;
+import com.example.beamagayver.Utilities.NumberUtils;
+import com.example.beamagayver.Utilities.TimePicker;
 import com.example.beamagayver.data.FireStoreProcess;
 import com.example.beamagayver.data.PrefManager;
 import com.example.beamagayver.pojo.JoinedModel;
 import com.example.beamagayver.pojo.LikesModel;
 import com.example.beamagayver.pojo.LocationModel;
 import com.example.beamagayver.pojo.Post;
-import com.example.beamagayver.pojo.UserActivity;
 import com.google.android.material.textfield.TextInputEditText;
 import com.squareup.picasso.Picasso;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
@@ -40,8 +47,10 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class AddPostActivity extends AppCompatActivity implements View.OnClickListener
         , TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener
-        , DialogListener {
+        , DialogListener, LocationListener {
     private static final String TAG = "AddPostActivity";
+    private static final int REQUEST_LOCATION_CODE = 99;
+    public static Location mCurrentLocation;
     @BindView(R.id.delete_car_details)
     ImageView deleteCarDetails;
     @BindView(R.id.delete_duration)
@@ -94,7 +103,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
     ImageView deleteLocationIcon;
     private PrefManager manager;
     private Post mEditPost;
-    LocationModel locationModel;
+    private LocationModel locationModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,45 +112,16 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
         ButterKnife.bind(this);
         init();
     }
-
-    private void extractPost(Post post) {
-        postCaption.setText(post.getmPostCaption());
-        postCaption.setVisibility(View.VISIBLE);
-        carDetailsTV.setText(post.getmCarDetails());
-        carDetailsTV.setVisibility(View.VISIBLE);
-        deleteCarDetails.setVisibility(View.VISIBLE);
-        String duration = post.getmDuration() + " hours";
-        sessionDurationTV.setText(duration);
-        sessionDurationTV.setVisibility(View.VISIBLE);
-        deleteDuration.setVisibility(View.VISIBLE);
-        startDateTV.setText(post.getmStartDate());
-        startDateTV.setVisibility(View.VISIBLE);
-        deleteStartDate.setVisibility(View.VISIBLE);
-        startTimeTV.setText(post.getmStartTime());
-        startTimeTV.setVisibility(View.VISIBLE);
-        deleteStartTime.setVisibility(View.VISIBLE);
-        phoneNumber.setText(post.getmPhoneNumber());
-        phoneNumber.setVisibility(View.VISIBLE);
-        deletePhoneNumber.setVisibility(View.VISIBLE);
-        String price = post.getmPrice() + " EGP";
-        priceTv.setText(price);
-        deletePrice.setVisibility(View.VISIBLE);
-        priceTv.setVisibility(View.VISIBLE);
-        locationModel = post.getmLocation();
-        String location = locationModel.getStreet() + ", " + locationModel.getCity() + ", "+locationModel.getCountry();
-        locationTV.setText(location);
-        locationIcon.setVisibility(View.VISIBLE);
-    }
-
     private void init() {
         try {
+            GetLocation getLocation = new GetLocation(this, this, this);
             manager = new PrefManager(this);
-            actionBarConfig();
-            setUserInfo();
-            mEditPost = (Post)getIntent().getSerializableExtra("EditPost");
-            if(mEditPost != null) {
+            mEditPost = (Post) getIntent().getSerializableExtra("EditPost");
+            if (mEditPost != null) {
                 extractPost(mEditPost);
             }
+            actionBarConfig();
+            setUserInfo();
             postCaption.setOnClickListener(this);
             deleteCarDetails.setOnClickListener(this);
             deleteDuration.setOnClickListener(this);
@@ -163,6 +143,35 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
+    private void extractPost(Post post) {
+        postCaption.setText(post.getmPostCaption());
+        postCaption.setVisibility(View.VISIBLE);
+        carDetailsTV.setText(post.getmCarDetails());
+        carDetailsTV.setVisibility(View.VISIBLE);
+        deleteCarDetails.setVisibility(View.VISIBLE);
+        String duration = post.getmDuration();
+        sessionDurationTV.setText(duration);
+        sessionDurationTV.setVisibility(View.VISIBLE);
+        deleteDuration.setVisibility(View.VISIBLE);
+        startDateTV.setText(post.getmStartDate());
+        startDateTV.setVisibility(View.VISIBLE);
+        deleteStartDate.setVisibility(View.VISIBLE);
+        startTimeTV.setText(post.getmStartTime());
+        startTimeTV.setVisibility(View.VISIBLE);
+        deleteStartTime.setVisibility(View.VISIBLE);
+        phoneNumber.setText(post.getmPhoneNumber());
+        phoneNumber.setVisibility(View.VISIBLE);
+        deletePhoneNumber.setVisibility(View.VISIBLE);
+        String price = post.getmPrice();
+        priceTv.setText(price);
+        deletePrice.setVisibility(View.VISIBLE);
+        priceTv.setVisibility(View.VISIBLE);
+        locationModel = post.getmLocation();
+        String location = locationModel.getStreet() + ", " + locationModel.getCity() + ", " + locationModel.getCountry();
+        locationTV.setText(location);
+        locationIcon.setVisibility(View.VISIBLE);
+    }
+
     private void setUserInfo() {
         postOwnerNameTv.setText(manager.readString(getResources().getString(R.string.account_name)));
         Picasso.get().load(manager.readString(getResources().getString(R.string.account_photo))).into(postOwnerImage);
@@ -170,23 +179,26 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
 
     private void actionBarConfig() {
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
+        if (actionBar != null && mEditPost == null) {
             actionBar.setHomeAsUpIndicator(R.drawable.ic_close_black_24dp);
             actionBar.setTitle(getResources().getString(R.string.create_session));
+        }else if(actionBar != null){
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_close_black_24dp);
+            actionBar.setTitle(getResources().getString(R.string.edit_session));
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        if(mEditPost != null) inflater.inflate(R.menu.update_post , menu);
+        if (mEditPost != null) inflater.inflate(R.menu.update_post, menu);
         else inflater.inflate(R.menu.add_post, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.update){
+        if (item.getItemId() == R.id.update) {
             updatePost();
         }
         if (item.getItemId() == R.id.post) {
@@ -199,8 +211,12 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
         return super.onOptionsItemSelected(item);
     }
 
+    public static Location getLocation() {
+        return mCurrentLocation;
+    }
+
     private void updatePost() {
-        if(checkViews()){
+        if (checkViews()) {
             String caption = Objects.requireNonNull(postCaption.getText()).toString();
             String carDetails = carDetailsTV.getText().toString();
             String duration = sessionDurationTV.getText().toString();
@@ -216,6 +232,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
             mEditPost.setmPhoneNumber(number);
             mEditPost.setmPrice(price);
             mEditPost.setmLocation(locationModel);
+            mEditPost.setDistance(locationModel.getDistance());
             FireStoreProcess.updatePost(mEditPost);
             Toast.makeText(this, "Updated post", Toast.LENGTH_SHORT).show();
             finish();
@@ -230,7 +247,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                 String ownerName = manager.readString(getResources().getString(R.string.account_name));
                 String ownerImage = manager.readString(getResources().getString(R.string.account_photo));
                 int sessionCount = manager.readInt(getResources().getString(R.string.session_count));
-                String postTime = DateFormat.format("dd/MM/yy hh:mm a", new Date()).toString();
+                String postTime = DateFormat.format("dd/MM/yyyy hh:mm a", new Date()).toString();
                 Log.i(TAG, "createPost: post time" + postTime);
                 String caption = Objects.requireNonNull(postCaption.getText()).toString();
                 String carDetails = carDetailsTV.getText().toString();
@@ -239,12 +256,13 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                 String startTime = startTimeTV.getText().toString();
                 String number = phoneNumber.getText().toString();
                 String price = priceTv.getText().toString();
-                LikesModel likes = new LikesModel(0 , new ArrayList<>());
-                JoinedModel joined = new JoinedModel(0 , new ArrayList<>());
+                LikesModel likes = new LikesModel(0, new ArrayList<>());
+                JoinedModel joined = new JoinedModel(0, new ArrayList<>());
                 Post post = new Post(ownerName, id, ownerImage, postTime, caption, carDetails, duration
                         , startDate, startTime, joined, likes, number, locationModel, price);
+                post.setDistance(String.valueOf(NumberUtils.distance(locationModel.getLatitude(), locationModel.getLongitude(), mCurrentLocation)));
                 FireStoreProcess.addPostToUser(post);
-                manager.saveInt(getResources().getString(R.string.session_count) , sessionCount +1);
+                manager.saveInt(getResources().getString(R.string.session_count), sessionCount + 1);
                 Toast.makeText(this, "Session has been added Successfully", Toast.LENGTH_SHORT).show();
                 finish();
             }
@@ -323,7 +341,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                 locationModel = null;
                 locationIcon.setVisibility(View.GONE);
                 break;
-            case R.id.delete_car_details :
+            case R.id.delete_car_details:
                 carDetailsTV.setText("");
                 carDetailsTV.setVisibility(View.GONE);
                 deleteCarDetails.setVisibility(View.GONE);
@@ -333,33 +351,33 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                 sessionDurationTV.setVisibility(View.GONE);
                 deleteDuration.setVisibility(View.GONE);
                 break;
-            case R.id.delete_start_date :
+            case R.id.delete_start_date:
                 startDateTV.setText("");
                 startDateTV.setVisibility(View.GONE);
                 deleteStartDate.setVisibility(View.GONE);
                 break;
-            case R.id.delete_start_time :
+            case R.id.delete_start_time:
                 startTimeTV.setText("");
                 startTimeTV.setVisibility(View.GONE);
                 deleteStartTime.setVisibility(View.GONE);
                 break;
-            case R.id.delete_phone_number :
+            case R.id.delete_phone_number:
                 phoneNumber.setText("");
                 phoneNumber.setVisibility(View.GONE);
                 deletePhoneNumber.setVisibility(View.GONE);
                 break;
-            case R.id.delete_price :
+            case R.id.delete_price:
                 priceTv.setText("");
                 priceTv.setVisibility(View.GONE);
                 deletePrice.setVisibility(View.GONE);
                 break;
-            case R.id.post_edit_text :
+            case R.id.post_edit_text:
                 postCaption.setFocusableInTouchMode(true);
                 break;
-            case R.id.locations_icon :
-                if(locationModel != null){
+            case R.id.locations_icon:
+                if (locationModel != null) {
                     MapBottomSheet sheet = new MapBottomSheet(locationModel);
-                    sheet.show(getSupportFragmentManager() , sheet.getTag());
+                    sheet.show(getSupportFragmentManager(), sheet.getTag());
                 }
                 break;
         }
@@ -422,4 +440,23 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
         locationIcon.setVisibility(View.VISIBLE);
     }
 
+    @Override
+    public void onLocationChanged(Location location) {
+        mCurrentLocation = location;
+    }
+
+    @Override
+    public void onStatusChanged(String s, int i, Bundle bundle) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String s) {
+        Toast.makeText(this, "getting your location", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onProviderDisabled(String s) {
+        Toast.makeText(this, "Open GPS to get your location", Toast.LENGTH_SHORT).show();
+    }
 }

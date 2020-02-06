@@ -1,8 +1,8 @@
 package com.example.beamagayver.pojo;
 import java.io.Serializable;
 
-
-public class Post implements Comparable<Post> , Serializable {
+//Comparable<Post> ,
+public class Post implements  Serializable {
     private String mPostID;
     private String mOwnerID;
     private String mOwnerName;
@@ -16,6 +16,7 @@ public class Post implements Comparable<Post> , Serializable {
     private JoinedModel mJoined;
     private LikesModel mLikes;
     private String mPrice;
+    private String distance;
     private String mPhoneNumber;
     private LocationModel mLocation;
 
@@ -42,6 +43,14 @@ public class Post implements Comparable<Post> , Serializable {
         this.mPhoneNumber = phoneNumber;
         this.mLocation = location;
         this.mPrice = price;
+    }
+
+    public String getDistance() {
+        return distance;
+    }
+
+    public void setDistance(String distance) {
+        this.distance = distance;
     }
 
     public String getmPrice() {
@@ -164,9 +173,9 @@ public class Post implements Comparable<Post> , Serializable {
         this.mStartDate = mStartDate;
     }
 
-    @Override
-    public int compareTo(Post o) {
-
-        return mPostTime.compareTo(o.mPostTime);
-    }
+//    @Override
+//    public int compareTo(Post o) {
+//
+//        return mPostTime.compareTo(o.mPostTime);
+//    }
 }

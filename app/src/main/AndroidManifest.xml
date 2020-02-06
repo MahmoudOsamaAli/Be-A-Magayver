@@ -28,7 +28,7 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".view.activities.addPost.AddPostActivity"
+            android:name=".view.activities.AddPostActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:parentActivityName=".view.activities.HomeActivity"
             android:theme="@style/AppThemeWithActionBar" />

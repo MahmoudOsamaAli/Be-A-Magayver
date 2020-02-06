@@ -6,7 +6,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import com.example.beamagayver.view.fragments.activities.ActivitiesFragment;
-import com.example.beamagayver.view.fragments.ProfileFragment;
+import com.example.beamagayver.view.fragments.profile.ProfileFragment;
 import com.example.beamagayver.view.fragments.sessionFragment.SessionsFragment;
 
 public class MyPagerAdapter extends FragmentStatePagerAdapter {

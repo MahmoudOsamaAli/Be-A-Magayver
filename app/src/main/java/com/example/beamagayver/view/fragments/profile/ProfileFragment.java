@@ -1,4 +1,4 @@
-package com.example.beamagayver.view.fragments;
+package com.example.beamagayver.view.fragments.profile;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -22,6 +23,7 @@ import androidx.fragment.app.Fragment;
 import com.example.beamagayver.R;
 import com.example.beamagayver.data.PrefManager;
 import com.example.beamagayver.pojo.User;
+import com.example.beamagayver.pojo.UserActivity;
 import com.example.beamagayver.view.activities.WelcomeActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
@@ -31,6 +33,7 @@ import com.google.firebase.firestore.WriteBatch;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import butterknife.BindView;
@@ -88,6 +91,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener, V
     TextView userTypeTV;
     @BindView(R.id.instructor_session_count)
     TextView sessionCountTV;
+    @BindView(R.id.create_admin)
+    Button createAdmin;
 
 
     @Override
@@ -120,6 +125,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener, V
             signOut.setOnClickListener(this);
             changePhoto.setOnClickListener(this);
             saveProfilePhoto.setOnClickListener(this);
+            createAdmin.setOnClickListener(this);
         } catch (Exception e) {
             e.printStackTrace();
             Log.i(TAG, "init: " + e.getMessage());
@@ -137,8 +143,22 @@ public class ProfileFragment extends Fragment implements View.OnClickListener, V
         if (type.equals("instructor")) {
             userTypeTV.setText("Instructor");
             sessionCountTV.setVisibility(View.VISIBLE);
-            String count = "Created "+sessionCount +" sessions";
-            sessionCountTV.setText(count);
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("instructor").document(id).collection("activities")
+                    .get().addOnCompleteListener(task1 -> {
+                int count = 0;
+                if (task1.isSuccessful() && task1.isComplete() && task1.getResult() != null) {
+                    List<UserActivity> userActivities = task1.getResult().toObjects(UserActivity.class);
+                    for (UserActivity activities : userActivities) {
+                        if (activities.isCreated()) count++;
+                    }
+                    String s = "Created " + count + " Sessions";
+                    sessionCountTV.setVisibility(View.VISIBLE);
+                    sessionCountTV.setText(s);
+                }
+            });
+//            String count = "Created "+sessionCount +" sessions";
+//            sessionCountTV.setText(count);
 
         }else if(type.equals("user")){
             userTypeTV.setText("New learner");
@@ -156,7 +176,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener, V
         type = prefManager.readString(getResources().getString(R.string.account_type));
         country = prefManager.readString(getResources().getString(R.string.account_country));
         phoneNumber = prefManager.readString(getResources().getString(R.string.account_phone_number));
-        sessionCount = prefManager.readInt(getResources().getString(R.string.session_count));
+//        sessionCount = prefManager.readInt(getResources().getString(R.string.session_count));
     }
 
     private void openGallery() {
@@ -185,7 +205,13 @@ public class ProfileFragment extends Fragment implements View.OnClickListener, V
         else if (view == editCountryButton) startEditCountry();
         else if (view == saveProfilePhoto) startChangingUserPhoto();
         else if (view == restorePhoto) restoreOldPhoto();
+        else if(view == createAdmin) createDialog();
 
+    }
+
+    private void createDialog() {
+        AddAdminDialog addAdminDialog = new AddAdminDialog();
+        addAdminDialog.show(Objects.requireNonNull(getActivity()).getSupportFragmentManager() , addAdminDialog.getTag());
     }
 
     private void startChangingUserPhoto() {

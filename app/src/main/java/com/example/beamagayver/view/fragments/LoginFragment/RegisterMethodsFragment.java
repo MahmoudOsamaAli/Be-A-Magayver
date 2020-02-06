@@ -24,6 +24,7 @@ import com.example.beamagayver.R;
 import com.example.beamagayver.data.FireStoreProcess;
 import com.example.beamagayver.data.PrefManager;
 import com.example.beamagayver.pojo.User;
+import com.example.beamagayver.view.activities.AdminAuthActivity;
 import com.example.beamagayver.view.activities.HomeActivity;
 import com.example.beamagayver.view.activities.WelcomeActivity;
 import com.facebook.AccessToken;
@@ -111,10 +112,12 @@ public class RegisterMethodsFragment extends Fragment implements View.OnClickLis
 
     private void init() {
         try {
+            Log.i(TAG, "init: ");
+            handler.postDelayed(runnableLogIn , 5000);
             presenter = new LoginPresenter(mContext, this, this, mAuth);
             mPrefManager = new PrefManager(mContext);
             mCallbackManager = CallbackManager.Factory.create();
-            methods.setVisibility(View.VISIBLE);
+//            methods.setVisibility(View.VISIBLE);
             instructorButton.setOnClickListener(this);
             newClientButton.setOnClickListener(this);
             googleForInstructor.setOnClickListener(this);
@@ -123,6 +126,7 @@ public class RegisterMethodsFragment extends Fragment implements View.OnClickLis
             fbForUser.setOnClickListener(this);
             twitterForInstructor.setOnClickListener(this);
             fbForUser.setOnClickListener(this);
+            adminButton.setOnClickListener(this);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -172,6 +176,9 @@ public class RegisterMethodsFragment extends Fragment implements View.OnClickLis
                 Buser = true;
                 startSignInWithFB();
                 break;
+            case R.id.admin_button :
+                mContext.startActivity(new Intent(mContext , AdminAuthActivity.class));
+
         }
     }
 

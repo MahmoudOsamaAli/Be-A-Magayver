@@ -34,12 +34,14 @@ import com.example.beamagayver.pojo.LikesModel;
 import com.example.beamagayver.pojo.Post;
 import com.example.beamagayver.pojo.UserActivity;
 import com.example.beamagayver.view.activities.HomeActivity;
-import com.example.beamagayver.view.activities.addPost.AddPostActivity;
+import com.example.beamagayver.view.activities.AddPostActivity;
 import com.example.beamagayver.view.fragments.sessionFragment.showProfile;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.squareup.picasso.Picasso;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class SessionAdapter extends FirestoreRecyclerAdapter<Post, SessionAdapter.MyHolder> {
@@ -54,7 +56,7 @@ public class SessionAdapter extends FirestoreRecyclerAdapter<Post, SessionAdapte
     private String userType;
     private showProfile listener;
 
-    public SessionAdapter(@NonNull FirestoreRecyclerOptions<Post> options, Context context, Activity activity ,showProfile listener) {
+    public SessionAdapter(@NonNull FirestoreRecyclerOptions<Post> options, Context context, Activity activity, showProfile listener) {
         super(options);
         mContext = context;
         mActivity = activity;
@@ -68,12 +70,14 @@ public class SessionAdapter extends FirestoreRecyclerAdapter<Post, SessionAdapte
     protected void onBindViewHolder(@NonNull MyHolder holder, int position, @NonNull Post p) {
         try {
             holder.currPost = p;
+            Log.i(TAG, "onBindViewHolder: " + p.getmLocation().getDistance());
             String startDate = p.getmStartDate() + " - " + p.getmStartTime();
             Uri photoUri = Uri.parse(p.getmOwnerImage());
             sessionLAT = p.getmLocation().getLatitude();
             sessionLON = p.getmLocation().getLongitude();
             if (mCurrentLocation != null) {
                 double distance = NumberUtils.distance(sessionLAT, sessionLON, mCurrentLocation);
+                holder.currPost.setDistance(String.valueOf(distance));
                 String dis = distance + " Kilometers away from you";
                 holder.postDist.setVisibility(View.VISIBLE);
                 holder.postDist.setText(dis);
@@ -101,7 +105,7 @@ public class SessionAdapter extends FirestoreRecyclerAdapter<Post, SessionAdapte
             setJoined(joinedModel.getUsers().contains(userID), holder);
             holder.likesCount.setText(likes);
             holder.joinedCount.setText(joined);
-            setViews(holder , p);
+            setViews(holder, p);
         } catch (Exception e) {
             e.printStackTrace();
             Log.i(TAG, "onBindViewHolder: " + e.getMessage());
@@ -109,15 +113,26 @@ public class SessionAdapter extends FirestoreRecyclerAdapter<Post, SessionAdapte
     }
 
     private void setViews(MyHolder holder, Post p) {
-        if(p.getmOwnerID().equals(userID)){
-            holder.menu.setVisibility(View.VISIBLE);
-            holder.join.setVisibility(View.GONE);
-        }else{
-            holder.menu.setVisibility(View.GONE);
-            holder.join.setVisibility(View.VISIBLE);
+        try {
+            if (p.getmOwnerID().equals(userID)) holder.menu.setVisibility(View.VISIBLE);
+            else holder.menu.setVisibility(View.GONE);
+            if(userType.equals("instructor")) holder.join.setClickable(false);
+            String postTime = p.getmStartDate().replaceAll("\\s+", "");
+            String curr = DateFormat.format("dd/MM/yyyy", new Date()).toString();
+            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+
+            Date parse = format.parse(postTime);
+            Date parse1 = format.parse(curr);
+            Log.i(TAG, "setViews: current time = " + curr);
+            Log.i(TAG, "setViews: post time = " + postTime);
+            if (parse != null && parse.compareTo(parse1) <= 0) {
+                holder.deprecated.setVisibility(View.VISIBLE);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+            Log.i(TAG, "setViews: " + e.getMessage());
         }
     }
-
 
     private void setLikes(boolean liked, MyHolder holder) {
         try {
@@ -183,6 +198,7 @@ public class SessionAdapter extends FirestoreRecyclerAdapter<Post, SessionAdapte
         LinearLayout distLayout;
         ProgressBar progressBar;
         TextView cost;
+        TextView deprecated;
 
         MyHolder(@NonNull View itemView) {
             super(itemView);
@@ -205,6 +221,7 @@ public class SessionAdapter extends FirestoreRecyclerAdapter<Post, SessionAdapte
             postDist = itemView.findViewById(R.id.post_distance);
             distLayout = itemView.findViewById(R.id.distance_layout);
             progressBar = itemView.findViewById(R.id.get_location_progress);
+            deprecated = itemView.findViewById(R.id.deprecated);
             progressBar.setVisibility(View.GONE);
             cost = itemView.findViewById(R.id.cost_tv);
             menu.setOnClickListener(this);
@@ -245,7 +262,7 @@ public class SessionAdapter extends FirestoreRecyclerAdapter<Post, SessionAdapte
                         mCurrentLocation = HomeActivity.getLocation();
                     }
                     break;
-                case R.id.post_owner_imaage :
+                case R.id.post_owner_imaage:
                     Log.i(TAG, "onClick: post owner image clicked");
                     listener.onImageClicked(currPost.getmOwnerID());
                     break;
@@ -285,14 +302,14 @@ public class SessionAdapter extends FirestoreRecyclerAdapter<Post, SessionAdapte
                 Log.i(TAG, "onClick: joined");
                 FireStoreProcess.updatePostLikesJoined(postID, "mJoined", 1, userID);
                 activity.setJoined(true);
-                FireStoreProcess.addUserActivity(activity ,userID , userType);
+                FireStoreProcess.addUserActivity(activity, userID, userType);
             } else {
                 joined = false;
                 Log.i(TAG, "onClick: not joined");
                 FireStoreProcess.updatePostLikesJoined(postID, "mJoined", -1, userID);
                 activity.setJoined(false);
                 FireStoreProcess process = new FireStoreProcess(mContext);
-                FireStoreProcess.deleteActivity(userID , currPost.getmPostID() , userType);
+                FireStoreProcess.deleteActivity(userID, currPost.getmPostID(), userType);
             }
 
 
@@ -333,10 +350,10 @@ public class SessionAdapter extends FirestoreRecyclerAdapter<Post, SessionAdapte
                             FireStoreProcess.deletePost(currPost.getmPostID());
                             dialogInterface.dismiss();
                         }).setNegativeButton("No", (dialogInterface, i) -> {
-                            dialogInterface.dismiss();
-                        }).create().show();
-            }else if(item.getItemId() == R.id.edit_post){
-                Intent intent = new Intent(mActivity , AddPostActivity.class);
+                    dialogInterface.dismiss();
+                }).create().show();
+            } else if (item.getItemId() == R.id.edit_post) {
+                Intent intent = new Intent(mActivity, AddPostActivity.class);
                 intent.putExtra("EditPost", currPost);
                 mContext.startActivity(intent);
             }

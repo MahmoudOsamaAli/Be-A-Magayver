@@ -1,14 +1,11 @@
-package com.example.beamagayver.view.activities.addPost;
+package com.example.beamagayver.Utilities;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -26,12 +23,12 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.beamagayver.R;
 import com.example.beamagayver.pojo.LocationModel;
 import com.example.beamagayver.view.activities.HomeActivity;
+import com.example.beamagayver.view.activities.AddPostActivity;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -56,10 +53,10 @@ import butterknife.ButterKnife;
 
 public class MapBottomSheet extends BottomSheetDialogFragment implements OnMapReadyCallback
         , GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMapClickListener
-        , View.OnClickListener, AdapterView.OnItemSelectedListener , View.OnFocusChangeListener {
+        , View.OnClickListener, AdapterView.OnItemSelectedListener, View.OnFocusChangeListener
+        , LocationListener {
 
     private static final String TAG = "MapBottomSheet";
-    private static final int REQUEST_LOCATION_CODE = 99;
     private static final float DEFAULT_ZOOM = 15f;
     private GoogleMap mMap;
     private LatLng currLocation;
@@ -67,6 +64,7 @@ public class MapBottomSheet extends BottomSheetDialogFragment implements OnMapRe
     private Activity mContext;
     private Marker marker;
     private LocationModel locationModel;
+    private GetLocation getLocation;
     @BindView(R.id.get_location)
     Button getLocationButton;
     @BindView(R.id.icon_close)
@@ -78,42 +76,17 @@ public class MapBottomSheet extends BottomSheetDialogFragment implements OnMapRe
     @BindView(R.id.map_activity_street_edit_text)
     TextInputEditText streetEditText;
     private String selectedCountry;
-    private final LocationListener locationListener = new LocationListener() {
-
-        @Override
-        public void onLocationChanged(Location location) {
-            currLocation = new LatLng(location.getLatitude(), location.getLongitude());
-            Log.i(TAG, "onLocationChanged: lon " + location.getLatitude() + " ,lat " + location.getLongitude());
-        }
-
-        @Override
-        public void onStatusChanged(String s, int i, Bundle bundle) {
-        }
-
-        @Override
-        public void onProviderEnabled(String s) {
-        }
-
-        @Override
-        public void onProviderDisabled(String s) {
-            new AlertDialog.Builder(mContext)
-                    .setMessage("Open GPS to calculate how are sessions far away from you")
-                    .setPositiveButton("Ok", (dialogInterface, i) -> {
-                        dialogInterface.dismiss();
-                    })
-                    .create().show();
-        }
-    };
 
 
-    public MapBottomSheet() {}
+    public MapBottomSheet() {
+    }
 
     public MapBottomSheet(LocationModel model) {
         this.locationModel = model;
     }
 
     private void setViews() {
-        currLocation = new LatLng(locationModel.getLatitude() , locationModel.getLongitude());
+        currLocation = new LatLng(locationModel.getLatitude(), locationModel.getLongitude());
         cityEditText.setText(locationModel.getCity());
         streetEditText.setText(locationModel.getStreet());
         String country = locationModel.getCountry();
@@ -125,7 +98,6 @@ public class MapBottomSheet extends BottomSheetDialogFragment implements OnMapRe
             countriesSpinner.setSelection(spinnerPosition);
         }
     }
-
 
     @NotNull
     @Override
@@ -172,10 +144,8 @@ public class MapBottomSheet extends BottomSheetDialogFragment implements OnMapRe
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        Log.i(TAG, "onViewCreated: ");
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
-        if(locationModel != null) setViews();
         if (isServiceSDK()) init();
     }
 
@@ -187,7 +157,7 @@ public class MapBottomSheet extends BottomSheetDialogFragment implements OnMapRe
             listener = (DialogListener) mContext;
         } catch (Exception e) {
             e.printStackTrace();
-            mContext = (HomeActivity)context;
+            mContext = (HomeActivity) context;
         }
     }
 
@@ -213,11 +183,10 @@ public class MapBottomSheet extends BottomSheetDialogFragment implements OnMapRe
         closeButton.setOnClickListener(this);
         getLocationButton.setOnClickListener(this);
         countriesSpinner.setOnItemSelectedListener(this);
-        Location location = HomeActivity.getLocation();
-        currLocation = new LatLng(location.getLatitude() , location.getLongitude());
+        if (locationModel != null) setViews();
+        else getLocation = new GetLocation(mContext, getActivity(), this);
         initMap();
     }
-
 
     private void initMap() {
         Log.i(TAG, "initMap: ");
@@ -226,31 +195,6 @@ public class MapBottomSheet extends BottomSheetDialogFragment implements OnMapRe
         fragmentTransaction.add(R.id.map, mapFragment);
         fragmentTransaction.commit();
         mapFragment.getMapAsync(this);
-    }
-
-    private void getDeviceLocation() {
-        try {
-            if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(mContext)
-                    , Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                    || ActivityCompat.checkSelfPermission(mContext
-                    , Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(Objects.requireNonNull(getActivity())
-                        , new String[]{Manifest.permission.ACCESS_COARSE_LOCATION
-                                , Manifest.permission.ACCESS_FINE_LOCATION}
-                        , REQUEST_LOCATION_CODE);
-                Log.i(TAG, "getDeviceLocation: no permission to get location");
-            } else {
-                Log.i(TAG, "getDeviceLocation: called");
-                LocationManager lm = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
-                if (lm != null) {
-                    lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10,
-                            locationListener);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.i(TAG, "getDeviceLocation: catched an exception" + e.getMessage());
-        }
     }
 
     private void setupFullHeight(BottomSheetDialog bottomSheetDialog) {
@@ -309,7 +253,8 @@ public class MapBottomSheet extends BottomSheetDialogFragment implements OnMapRe
 
     @Override
     public boolean onMyLocationButtonClick() {
-        getDeviceLocation();
+        getLocation = new GetLocation(mContext, getActivity(), this);
+        Toast.makeText(mContext, "Getting your location", Toast.LENGTH_SHORT).show();
         if (currLocation != null) {
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currLocation, DEFAULT_ZOOM));
         }
@@ -352,4 +297,27 @@ public class MapBottomSheet extends BottomSheetDialogFragment implements OnMapRe
         }
     }
 
+    @Override
+    public void onLocationChanged(Location location) {
+        currLocation = new LatLng(location.getLatitude(), location.getLongitude());
+        Log.i(TAG, "onLocationChanged: lon " + location.getLatitude() + " ,lat " + location.getLongitude());
+    }
+
+    @Override
+    public void onStatusChanged(String s, int i, Bundle bundle) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String s) {
+        Toast.makeText(mContext, "Getting your location", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onProviderDisabled(String s) {
+        new AlertDialog.Builder(mContext)
+                .setMessage("Open GPS to calculate how are sessions far away from you")
+                .setPositiveButton("Ok", (dialogInterface, i) -> dialogInterface.dismiss())
+                .create().show();
+    }
 }

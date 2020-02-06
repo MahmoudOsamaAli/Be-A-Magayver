@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
     android:background="@android:color/white"
-    tools:context=".view.activities.addPost.AddPostActivity">
+    tools:context=".view.activities.AddPostActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -119,21 +119,23 @@
             android:textColor="@android:color/darker_gray"
             android:textStyle="bold"
             android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/delete_car_details"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/delete_car_details"
-            app:layout_constraintBottom_toBottomOf="@id/delete_car_details"
             tools:text="e.g Toyota Corolla 2010" />
+
         <ImageView
             android:id="@+id/delete_car_details"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_close_gray"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/car_details_button"
-            android:padding="4dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
             android:background="?android:attr/selectableItemBackground"
-            />
+            android:padding="4dp"
+            android:src="@drawable/ic_close_gray"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/car_details_button" />
 
         <TextView
             android:id="@+id/session_duration_label"
@@ -168,10 +170,13 @@
             app:layout_constraintStart_toStartOf="@id/session_duration_label"
             app:layout_constraintTop_toTopOf="@id/delete_duration"
             tools:text="e.g 60 mins" />
+
         <ImageView
             android:id="@+id/delete_duration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
             android:background="?android:attr/selectableItemBackground"
             android:padding="4dp"
             android:src="@drawable/ic_close_gray"
@@ -208,14 +213,17 @@
             android:textColor="@android:color/darker_gray"
             android:textStyle="bold"
             android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/delete_start_date"
             app:layout_constraintStart_toStartOf="@id/start_date_label"
             app:layout_constraintTop_toTopOf="@id/delete_start_date"
-            app:layout_constraintBottom_toBottomOf="@+id/delete_start_date"
             tools:text="e.g 20/2/2020" />
+
         <ImageView
             android:id="@+id/delete_start_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
             android:background="?android:attr/selectableItemBackground"
             android:padding="4dp"
             android:src="@drawable/ic_close_gray"
@@ -241,6 +249,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/delete_start_date" />
+
         <TextView
             android:id="@+id/start_time"
             android:layout_width="wrap_content"
@@ -251,14 +260,17 @@
             android:textColor="@android:color/darker_gray"
             android:textStyle="bold"
             android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/delete_start_time"
             app:layout_constraintStart_toStartOf="@id/start_time_label"
             app:layout_constraintTop_toTopOf="@id/delete_start_time"
-            app:layout_constraintBottom_toBottomOf="@+id/delete_start_time"
             tools:text="e.g 2:20 PM" />
+
         <ImageView
             android:id="@+id/delete_start_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
             android:background="?android:attr/selectableItemBackground"
             android:padding="4dp"
             android:src="@drawable/ic_close_gray"
@@ -295,15 +307,17 @@
             android:textColor="@android:color/darker_gray"
             android:textStyle="bold"
             android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/delete_phone_number"
             app:layout_constraintStart_toStartOf="@id/phone_number_label"
             app:layout_constraintTop_toTopOf="@id/delete_phone_number"
-            app:layout_constraintBottom_toBottomOf="@+id/delete_phone_number"
             tools:text="01060413213" />
 
         <ImageView
             android:id="@+id/delete_phone_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
             android:background="?android:attr/selectableItemBackground"
             android:padding="4dp"
             android:src="@drawable/ic_close_gray"
@@ -329,10 +343,13 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/delete_phone_number" />
+
         <ImageView
             android:id="@+id/delete_price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
             android:background="?android:attr/selectableItemBackground"
             android:padding="4dp"
             android:src="@drawable/ic_close_gray"
@@ -350,9 +367,9 @@
             android:textColor="@android:color/darker_gray"
             android:textStyle="bold"
             android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/delete_price"
             app:layout_constraintStart_toStartOf="@id/price_label"
             app:layout_constraintTop_toTopOf="@id/delete_price"
-            app:layout_constraintBottom_toBottomOf="@+id/delete_price"
             tools:text="01060413213" />
 
         <TextView
@@ -378,9 +395,9 @@
             android:id="@+id/locations_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
             android:layout_marginStart="50dp"
             android:layout_marginLeft="50dp"
+            android:visibility="gone"
             app:layout_constraintStart_toStartOf="@id/add_location_label"
             app:layout_constraintTop_toBottomOf="@id/add_location_label">
 
@@ -405,15 +422,15 @@
                 android:id="@+id/locations_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/montserrat"
                 android:maxWidth="250dp"
                 android:maxLines="3"
                 android:minLines="1"
-                android:fontFamily="@font/montserrat"
                 android:textColor="@android:color/darker_gray"
                 android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@id/place_ic"
                 app:layout_constraintStart_toEndOf="@id/place_ic"
                 app:layout_constraintTop_toTopOf="@id/place_ic"
-                app:layout_constraintBottom_toBottomOf="@id/place_ic"
                 tools:text="01060413213" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>

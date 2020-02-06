@@ -95,15 +95,15 @@ public class ActivitiesAdapter extends RecyclerView.Adapter<ActivitiesAdapter.My
             Log.i(TAG, "onClick: ");
 
             try {
-                if(view.equals(delete)){
+                if(view.equals(delete)) {
                     PrefManager manager = new PrefManager(mContext);
                     UserActivity activity = data.get(getLayoutPosition());
                     String type = manager.readString(mContext.getResources().getString(R.string.account_type));
-                    if(activity.isJoined()) {
+                    if (activity.isJoined()) {
                         Toast.makeText(mContext, "deleted", Toast.LENGTH_SHORT).show();
                         FireStoreProcess process = new FireStoreProcess(mContext);
                         FireStoreProcess.deleteActivity(userID, activity.getPostID(), type);
-                    }else {
+                    } else {
                         String time = activity.getTime();
                         Toast.makeText(mContext, "deleted", Toast.LENGTH_SHORT).show();
                         FireStoreProcess process = new FireStoreProcess(mContext);

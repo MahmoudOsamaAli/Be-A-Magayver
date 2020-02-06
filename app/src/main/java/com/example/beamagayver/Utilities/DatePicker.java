@@ -1,4 +1,4 @@
-package com.example.beamagayver.view.activities.addPost;
+package com.example.beamagayver.Utilities;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
