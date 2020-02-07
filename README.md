@@ -4,7 +4,7 @@ it's a simple social application that aims to provide a platform for users who s
 
 # Tools.
 
-Andriod(java)   
+Andriod ( java )   
 FireStore (Auth , FireStore UI, realTime database)  
 Google maps
 
